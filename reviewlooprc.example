@@ -1,0 +1,48 @@
+# .reviewlooprc — what this repo adds to /review-loop
+
+Copy this file to `.reviewlooprc` at your repo's root and fill in what applies. Every section is
+optional; delete the ones you do not need. The file is prose: the skill reads it in full before
+its first round. It adds your repo's conventions and cannot loosen a rule of the skill.
+
+## Read first
+
+<!-- The documents every lens reads, by path, and the ones to read only when a diff touches
+their area. -->
+
+## Checks and shared services
+
+<!-- How to run the tests and checks. What a reviewer must not touch: a shared database, a live
+deployment, a real account, a command that rewrites files. -->
+
+## Lens angles
+
+### Correctness
+
+<!-- Angles in your stack's terms: the error paths that matter here, the callers on the other
+side of a contract. -->
+
+### Adversarial
+
+<!-- The hostile inputs, races and leaks this codebase is prone to. -->
+
+### API design
+
+<!-- What the contract is here, the naming rules, the boundaries that must hold. -->
+
+### Test rigor
+
+<!-- What a test here must prove, and how concurrency or platform claims are shown. -->
+
+## Fixing
+
+<!-- Rules a fix must follow, and the documents a fix can make false. -->
+
+## Gated areas
+
+<!-- What each of the skill's four gated areas means in this repo, and any area you add:
+Stated principles; Private data and secrets; Stored data and published contracts; Money. -->
+
+## Reporting
+
+<!-- Where follow-up work is filed, and the parent issue for pre-existing findings if you keep
+one. -->
