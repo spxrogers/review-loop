@@ -279,9 +279,9 @@ file outside the worktree (the session's scratchpad directory, or
     - *pre-existing — to be filed* or *out of scope — to be filed*,
       with the reason (for *out of scope*, the chain: the files or
       modules the fix would reach beyond the PR, and for a BLOCKER
-      or ISSUE the lens's own words), then *filed as* its issue —
-      or, for a *pre-existing* one, *linked to* the open or *not
-      planned* issue that covers it (a NIT: *listed*);
+      or ISSUE the lens's own words), then *filed as* its issue (a
+      NIT: *listed*) — or, for a *pre-existing* one, *linked to* the
+      open or *not planned* issue that covers it;
     - awaiting the user: a proposed deferral, a disagreement the
       mandate leaves to them, a finding neither of you can verify,
       or a fix in its own PR the session cannot open or force-push
