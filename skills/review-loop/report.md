@@ -63,10 +63,11 @@ finding one item with its severity, its lens(es), file:line and what is wrong, i
   issue.
 - **Out of scope — filed.** Each with why: *clearly outside the PR*, or the chain its fix would
   set off (the files or modules beyond the PR). For a BLOCKER or ISSUE, the lens's own words
-  beside that reason, and how the lens answered when it was told; then its issue.
+  beside that reason, and how the lens answered when it was told (or *not answered: no later
+  round*); then its issue.
 - **Fixed in their own PR.** Each pre-existing defect the PR made worse or more likely: how the
-  PR worsened it, the fix's PR, and that this PR merges after it. One *held* at the report is in
-  the open findings instead, marked as bound for its own PR.
+  PR worsened it, the fix's PR, and that this PR merges after it (or that it has merged). One
+  *held* at the report is in the open findings instead, marked as bound for its own PR.
 
 A list with nothing in it is written `none`, so a reader can tell an empty list from a missing
 one. When all three are empty, the section is the one line `### Sent to another PR: none`.
@@ -86,7 +87,7 @@ there: a class with five instances is one, and a finding two lenses raised is on
 | `extended` | `true` once the judge has granted the two extra rounds |
 | `findings` | every entry, at its audited severity; one dropped as false is included at the severity the lens gave it |
 | `blocker`, `issue`, `nit` | `findings` split by that severity; they sum to it |
-| `verified` | BLOCKERs and ISSUEs, by the lens's label and neither pre-existing nor out of scope, accepted at that label or above with the line of evidence that showed them real |
+| `verified` | BLOCKERs and ISSUEs, by the lens's label and neither filed as pre-existing nor out of scope (a worsened one counts here), accepted at that label or above with the line of evidence that showed them real |
 | `accepted_unverified` | BLOCKERs and ISSUEs, neither pre-existing nor out of scope, accepted with the audit skipped |
 | `overruled` | BLOCKERs and ISSUEs, neither pre-existing nor out of scope, dropped as false or rated below the lens's label, and not withdrawn; one rated down and then fixed counts here only |
 | `pre_existing` | entries of any severity confirmed pre-existing and filed; not the ones the PR worsened |

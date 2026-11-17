@@ -51,7 +51,9 @@ otherwise:
 > and answer it in one line: raise it again and say why the
 > evidence is wrong, or drop it. Answer each finding of your lens
 > filed as *out of scope* the same way, against the chain recorded
-> for it: raise it again only to show the PR causes the defect.
+> for it: raise it again only to show the PR causes or worsens the
+> defect. Answer a finding you marked *pre-existing, worsened by
+> the PR* that was filed as plain pre-existing the same way.
 > Findings the user deferred are
 > listed there too, with the user's words, and so are NITs *held
 > for the exit* and pre-existing findings already recorded: do not
