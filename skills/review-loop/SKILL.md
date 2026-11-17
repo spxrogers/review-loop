@@ -248,25 +248,33 @@ file outside the worktree (the session's scratchpad directory, or
 - **each lens's report, verbatim**, saved beside the context file as
   it arrives (`round-<n>-<lens>.md`), so the Round history can be
   checked against what the reviewers actually said;
-- a **Round history** section, appended after every round: which
-  kind of round it was (whole-PR or diff-only), and each
-  finding, its severity, which lenses raised it, for an accepted
-  BLOCKER or ISSUE the one line of evidence that it was real, or
-  *accepted without verification* (Step 2, item 5), **where it came
-  from** (*the original change*; *round N's fix*, naming the commit;
-  *pre-existing*; or *pre-existing, worsened by the PR*), its class
-  when it has one, with the number of
-  other instances the sweep found (Step 3), and what was done
-  (fixed in which commit; fixed in its own PR, naming the PR, its
-  head and the rewritten previous SHA; *held* at the round gate; a NIT *held for
-  the exit*; *pre-existing — to be filed* or *out of scope — to be
-  filed*, with the reason, then *filed as* its issue (a NIT:
-  *listed*); proposed for
-  deferral and awaiting the user; deferred by the user, with their
-  words; deliberately not fixed; or overruled, with the lens's own
-  words, its original severity, and your evidence). The final
-  report's scorecard is counted from these entries
-  ([`report.md`](report.md)), so write each one when its round ends.
+- a **Round history** section, appended after every round. The
+  final report's scorecard is counted from it
+  ([`report.md`](report.md)), so write each round's entries when
+  the round ends. Each round records which kind it was (whole-PR or
+  diff-only), and each finding:
+  - its severity, and which lenses raised it;
+  - for an accepted BLOCKER or ISSUE, the one line of evidence that
+    it was real, or *accepted without verification* (Step 2,
+    item 5);
+  - **where it came from**: *the original change*; *round N's fix*,
+    naming the commit; *pre-existing*; or *pre-existing, worsened
+    by the PR*;
+  - its class when it has one, with the number of other instances
+    the sweep found (Step 3);
+  - **what was done**, one of:
+    - fixed, naming the commit;
+    - fixed in its own PR, naming the PR, its head and the
+      rewritten previous SHA;
+    - *held* at the round gate;
+    - a NIT *held for the exit*;
+    - *pre-existing — to be filed* or *out of scope — to be filed*,
+      with the reason, then *filed as* its issue (a NIT: *listed*);
+    - proposed for deferral and awaiting the user;
+    - deferred by the user, with their words;
+    - deliberately not fixed;
+    - overruled, with the lens's own words, its original severity,
+      and your evidence.
 
 Each brief then carries only its lens, the round's SHA and diffs,
 a few lines on what this round changed, and its angles; the PR's
