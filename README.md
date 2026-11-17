@@ -17,7 +17,7 @@ and can start subagents.
 - **It stops at convergence.** A round with no `BLOCKER` and no `ISSUE` in any lens ends the
   loop. A `NIT` never buys another round.
 - **A finding the PR did not cause is a follow-up PR, not a round.** A pre-existing defect, or
-  one whose fix is clearly outside the PR or would set off a chain of changes elsewhere, is
+  work beyond the PR that is clearly outside it or would set off a chain of changes elsewhere, is
   filed as follow-up work and does not hold the loop; the final report lists each, with why. A
   defect the PR causes is never filed this way, wherever it shows. A pre-existing defect the PR
   makes worse or more likely is fixed first in its own PR, with this one rebased on top.
