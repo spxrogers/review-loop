@@ -47,11 +47,29 @@ by_lens: correctness=3 adversarial=2 api-design=1 test-rigor=4
   this order, a count of `0` written as `0`. Its first line names the format's version; a change
   to the keys or to what one counts raises it.
 - **After it, the report Step 5 requires**, written for a reader with none of the run's context:
-  how the run ended, then every finding left open (held, deferred, pre-existing, out of scope,
-  NITs not fixed), each fix made in its own PR, every overrule of a BLOCKER or ISSUE with the lens's words beside the evidence, every
-  one accepted without verification, the issues filed, and that the loop did not run the full
-  checks on the head.
+  how the run ended, then every finding left open (held, deferred, NITs not fixed), the
+  section below on findings sent to another PR, every overrule of a BLOCKER or ISSUE with the
+  lens's words beside the evidence, every one accepted without verification, the issues filed,
+  and that the loop did not run the full checks on the head.
   When nothing is left open, say so in one line.
+
+## Findings sent to another PR
+
+A section headed `### Sent to another PR`, after the findings left open, in three lists, each
+finding one item with its severity, its lens(es), file:line and what is wrong, in a line:
+
+- **Pre-existing — filed.** Each with how the audit showed the PR did not touch it, and its
+  issue (or the open or *not planned* issue it was linked to instead). NITs are listed with no
+  issue.
+- **Out of scope — filed.** Each with why: *clearly outside the PR*, or the chain its fix would
+  set off (the files or modules beyond the PR). For a BLOCKER or ISSUE, the lens's own words
+  beside that reason, and how the lens answered when it was told; then its issue.
+- **Fixed in their own PR.** Each pre-existing defect the PR made worse or more likely: how the
+  PR worsened it, the fix's PR, and that this PR merges after it. One *held* at the report is in
+  the open findings instead, marked as bound for its own PR.
+
+A list with nothing in it is written `none`, so a reader can tell an empty list from a missing
+one. When all three are empty, the section is the one line `### Sent to another PR: none`.
 
 ## What each key counts
 

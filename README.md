@@ -18,8 +18,9 @@ and can start subagents.
   loop. A `NIT` never buys another round.
 - **A finding the PR did not cause is a follow-up PR, not a round.** A pre-existing defect, or
   one whose fix is clearly outside the PR or would set off a chain of changes elsewhere, is
-  filed as follow-up work and does not hold the loop. A pre-existing defect the PR makes worse
-  or more likely is fixed first in its own PR, with this one rebased on top.
+  filed as follow-up work and does not hold the loop; the final report lists each, with why. A
+  defect the PR causes is never filed this way, wherever it shows. A pre-existing defect the PR
+  makes worse or more likely is fixed first in its own PR, with this one rebased on top.
 - **The budget is 3 rounds.** If it runs out, the loop writes a post-mortem, and either a judge
   grants two more rounds or the loop reports to the person who owns the decision.
 - **Later rounds review the fixes.** The first two rounds read the whole PR; after that a round

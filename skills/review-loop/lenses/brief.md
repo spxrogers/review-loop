@@ -49,10 +49,13 @@ otherwise:
 > The Round history lists findings the main session overruled, with
 > its evidence. For each one your lens raised, check that evidence
 > and answer it in one line: raise it again and say why the
-> evidence is wrong, or drop it. Findings the user deferred are
+> evidence is wrong, or drop it. Answer each finding of your lens
+> filed as *out of scope* the same way, against the chain recorded
+> for it: raise it again only to show the PR causes the defect.
+> Findings the user deferred are
 > listed there too, with the user's words, and so are NITs *held
-> for the exit* and pre-existing and out-of-scope findings already
-> recorded: do not raise any of those again.
+> for the exit* and pre-existing findings already recorded: do not
+> raise any of those again.
 
 ## The report contract
 
