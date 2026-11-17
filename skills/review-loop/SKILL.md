@@ -253,8 +253,9 @@ file outside the worktree (the session's scratchpad directory, or
   ([`report.md`](report.md)), so write each round's entries when
   the round ends. Each round records which kind it was (whole-PR or
   diff-only), any extension the judge granted with its reasoning
-  (Step 6), each rebase onto a fix's own PR with its new base and
-  the rewritten previous SHA (Step 3), and each finding:
+  (Step 6), each later rebase onto a fix's own PR, once its branch
+  has moved, with its new base and the rewritten previous SHA
+  (Step 3), and each finding:
   - its audited severity, and which lenses raised it; when you
     rated it differently from the lens, the lens's label, its own
     words and your evidence (Step 2, items 4–5);
@@ -277,25 +278,27 @@ file outside the worktree (the session's scratchpad directory, or
       later fix removed it;
     - *pre-existing — to be filed* or *out of scope — to be filed*,
       with the reason (for *out of scope*, the chain: the files or
-      modules the fix would reach beyond the PR), then *filed as*
-      its issue or *linked to* the open or *not planned* issue that
-      covers it (a NIT: *listed*);
-    - awaiting the user, with what you asked: a proposed deferral,
-      a disagreement the mandate leaves to them, a finding neither
-      of you can verify, or a fix in its own PR the session cannot
-      open (Step 2, items 3 and 5; Step 3);
+      modules the fix would reach beyond the PR, and for a BLOCKER
+      or ISSUE the lens's own words), then *filed as* its issue —
+      or, for a *pre-existing* one, *linked to* the open or *not
+      planned* issue that covers it (a NIT: *listed*);
+    - awaiting the user: a proposed deferral, a disagreement the
+      mandate leaves to them, a finding neither of you can verify,
+      or a fix in its own PR the session cannot open or force-push
+      (Step 2, items 3 and 5; Step 3);
     - deferred by the user, with their words;
     - deliberately not fixed;
+    - dropped as false — an overrule (below);
   - beside that outcome, when it applies:
-    - **overruled** — dropped as false or rated below the lens's
-      label — with the lens's own words, its original severity and
-      your evidence, then the lens's answer next round, and
-      *withdrawn* if the answer convinced you (Step 2, item 4). A
-      finding rated down to a NIT then takes a NIT's outcome;
-    - for a finding filed as *out of scope*, or one a lens marked
-      *pre-existing, worsened by the PR* that you filed as
-      *pre-existing*, the lens's answer next round, or *not
-      answered: no later round* (Step 2, item 6).
+    - **overruled**: dropped as false or rated below the lens's
+      label, with the lens's own words, its original severity and
+      your evidence (the severity bullet above), and *withdrawn* if
+      the lens's answer next round convinced you (Step 2, item 4).
+      A finding rated down to a NIT then takes a NIT's outcome;
+    - for a BLOCKER or ISSUE filed as *out of scope*, or a finding
+      a lens marked *pre-existing, worsened by the PR* that you
+      filed as *pre-existing*, the lens's answer next round, or
+      *not answered: no later round* (Step 2, item 6).
 
 Each brief then carries only its lens, the round's SHA and diffs,
 a few lines on what this round changed, and its angles; the PR's
