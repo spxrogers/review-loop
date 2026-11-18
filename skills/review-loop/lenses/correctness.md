@@ -10,7 +10,14 @@ Cap: 700 words.
 >    non-trivial fix, walk what happens on the happy path, on each
 >    error path (a failed call, a partial write, a dependency's
 >    error, a cancellation), and under concurrent or unusual
->    inputs the author may not have considered.
+>    inputs the author may not have considered. Then ask of each fix
+>    whether the cause is still reachable: a guard, special case,
+>    retry, wait, suppression or loosened check that makes the
+>    reported symptom go away, while the next caller, input or
+>    timing still reaches the cause, is an `ISSUE` (the severity
+>    rubric's *A simpler alternative*). A guard that sits where the
+>    cause belongs, such as validation at a trust boundary, is the
+>    fix.
 >
 > 2. **Scan the change for bugs.** Walk each new or changed
 >    behaviour the same way: happy path, each error path,

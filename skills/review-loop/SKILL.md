@@ -585,6 +585,15 @@ one (Step 2, item 6).
 For each fix:
 
 - Make it the smallest correct change. Don't snowball.
+- **Fix the cause, not the symptom.** The smallest diff that makes
+  a reviewer stop flagging is often a guard on the symptom it named:
+  a special case for the reported input, a swallowed error, a retry
+  or a wait around a race, a suppressed or loosened check. If the
+  cause is still reachable by the next caller, input or timing, it
+  is not a fix, and the next round's Correctness lens checks every
+  fix for it (`lenses/correctness.md`, item 1). A guard that sits
+  where the cause belongs, such as validation at a trust boundary,
+  is the fix.
 - **Fix the class, not the instance.** Before fixing a finding, ask
   what mistake it is an instance of, and search the PR's change for
   the others — with the lens's pattern when its report gave one, or

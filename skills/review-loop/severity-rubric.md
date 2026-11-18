@@ -108,6 +108,25 @@ These are the cases where reviewers disagree with each other.
 - **A design alternative needs a scenario like anything else.** "This should be an interface",
   "this belongs in another package": `NIT`, unless you can name what goes wrong with the design
   as built (two copies that will drift and one already has; a caller that cannot be written).
+  A simpler alternative to what the change built is rated by the next ruling.
+- **A simpler alternative is an `ISSUE` only when it costs the change something concrete.** The
+  alternative must be correct on every path the original handles (its error paths, its edge
+  inputs, its concurrent case), and the change as built must pay one of these:
+  - a second copy of logic that already exists, which will drift from the first;
+  - code that no caller, requirement or recorded decision needs;
+  - a new dependency or mechanism where something already present (the standard library, the
+    platform, a declared dependency, a helper in the repo) does the job as well as the change
+    needs;
+  - a fix that guards a symptom (a special case for the reported input, a swallowed error, a
+    retry or a wait around a race, a suppressed or loosened check) while its cause stays
+    reachable by the next caller, input or timing.
+
+  Otherwise it is a `NIT`: shorter, cleaner or fewer lines, with none of those costs. It is never
+  a `BLOCKER` on simplicity alone: if the design as built breaks something, that is the finding,
+  rated as such. An alternative that is itself a hack (it drops an error path, weakens a check,
+  or leaves the cause reachable) is not simpler; it is not a finding. Neither is one that goes
+  against a recorded decision or a seam the repository requires. A guard is not a symptom-guard
+  when it sits where the cause belongs: validating input at a trust boundary is the fix.
 - **A recorded decision is not a finding.** Its implementation is rated as usual, and a record
   that understates its own cost is an `ISSUE` against the record.
 
@@ -130,6 +149,10 @@ The first column is the finding as raised.
 | An action anyone can trigger calls a third-party service metered to the project's account, and has no limit | `BLOCKER` | A script makes someone else pay without bound. Hand-crafted, and not lowered: the one harmed is not the caller |
 | A new step loads the whole of a collection its users can grow; the largest has 300 items today | `BLOCKER` | Ordinary growth reaches the size where it fails. Rated by what it does then, not by today's data |
 | One user reads another's record by guessing its id | `BLOCKER` | A wrong access decision. It harms someone other than the caller, so "only by hand" does not lower it |
+| A new interface has one implementation and stands at no seam the repository requires; nothing else is wrong with it | `NIT` | A simpler alternative with none of the ruling's costs: nothing drifts, nothing is unneeded but a layer, nothing goes wrong |
+| A change adds a third-party library for something the standard library already does as well as the feature needs | `ISSUE` | A new dependency where something present does the job: an upgrade to track and code nobody reviews, paid for no gain. Not a `BLOCKER`: nothing breaks |
+| A fix for a crash on an empty list adds an empty-input guard at the crash site; the caller that sends the empty list is unchanged, and a second caller can send one too | `ISSUE` | A fix that guards a symptom while its cause stays reachable: the next caller of the same path meets the same cause |
+| A reviewer calls input validation at a public endpoint a symptom-guard and proposes removing it | Not a finding | Validation at a trust boundary is where the cause belongs; removing it would be the hack |
 | A reviewer suspects a dependency rejects a batch above 50 items and that a new path can exceed it, but could not confirm the limit | `BLOCKER`, unverified | Rated as if true: those batches would fail. Marked unverified, with what was tried and that the dependency's limit would confirm it |
 
 A repository's review guides may carry worked examples of their own, drawn from its real
