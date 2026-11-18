@@ -297,8 +297,10 @@ file outside the worktree (the session's scratchpad directory, or
     - **overruled**: dropped as false or rated below the lens's
       label, with the lens's own words, its original severity and
       your evidence (the severity bullet above), and *withdrawn* if
-      the lens's answer next round convinced you (Step 2, item 4).
-      A finding rated down to a NIT then takes a NIT's outcome;
+      the lens's answer next round convinced you (Step 2, item 4),
+      or *not answered: no later round* for a simplicity finding,
+      since that lens runs in round 1 only. A finding rated down to a
+      NIT then takes a NIT's outcome;
     - for a BLOCKER or ISSUE filed as *out of scope*, or a finding
       a lens marked *pre-existing, worsened by the PR* that you
       filed as *pre-existing*, the lens's answer next round, or
@@ -607,9 +609,10 @@ For each fix:
   or a wait around a race, a suppressed or loosened check. If the
   cause is still reachable by the next caller, input or timing, it
   is not a fix, and the next round's Correctness lens checks every
-  fix for it (`lenses/correctness.md`, item 1). A guard that sits
-  where the cause belongs, such as validation at a trust boundary,
-  is the fix.
+  fix for it (`lenses/correctness.md`, item 1; the severity rubric's
+  *A fix that guards a symptom* says where a cause is). Valid input
+  handled where it is consumed, and validation at a trust boundary,
+  are fixes, not guards.
 - **Fix the class, not the instance.** Before fixing a finding, ask
   what mistake it is an instance of, and search the PR's change for
   the others — with the lens's pattern when its report gave one, or
@@ -937,7 +940,8 @@ path, or refuse it, on three tests:
 1. **Is the post-mortem honest?** Its classification of findings
    matches the saved lens reports, the Round history and the
    commits — every finding a lens raised is accounted for, and a
-   round missing any lens's saved report fails this test — and its
+   round missing the saved report of any lens that round launched
+   (simplicity launches in round 1 only) fails this test — and its
    root cause
    is supported rather than flattering.
 2. **Will the path reach Convergence in two rounds?** It addresses
@@ -1003,8 +1007,9 @@ Hard-won observations from the loop that this skill captures:
   design alone misses the test coverage gap, test rigor alone
   misses the attack surface. The combinatorial coverage is the
   point.
-- **And a fifth, on the first revision only.** The four checked
-  whether code worked, never whether it should exist: a mechanism
+- **And a fifth, on the first revision only.** The four ask mostly
+  whether code works; whether it should exist was one line at the
+  end of API design's list, and rarely reached. A mechanism
   reviewed three times and then deleted, because nothing needed
   it, is the shape. Simplicity asks that once, in
   round 1, where such code is introduced; it never runs again,

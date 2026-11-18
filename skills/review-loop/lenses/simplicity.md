@@ -42,8 +42,9 @@ for over-engineering, Correctness for a fix that guards a symptom.
 > - be **correct on every path the original handles**: its error
 >   paths, its edge inputs, its concurrent case;
 > - **never be a hack**: not a guard on a symptom whose cause stays
->   reachable, not a dropped error path, not a weakened or skipped
->   check, test or assertion;
+>   reachable (the rubric's *A fix that guards a symptom*), not a
+>   dropped error path, not a weakened or skipped check, test or
+>   assertion;
 > - **never go against a recorded decision** (the context file lists
 >   them) **or a seam the repo requires** (its rules or review guides
 >   say where). Simpler is not a reason to reopen either.

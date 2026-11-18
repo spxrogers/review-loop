@@ -14,10 +14,11 @@ Cap: 700 words.
 >    whether the cause is still reachable: a guard, special case,
 >    retry, wait, suppression or loosened check that makes the
 >    reported symptom go away, while the next caller, input or
->    timing still reaches the cause, is an `ISSUE` (the severity
->    rubric's *A simpler alternative*). A guard that sits where the
->    cause belongs, such as validation at a trust boundary, is the
->    fix.
+>    timing still reaches the cause, is at least an `ISSUE`, rated
+>    by what the cause still does (the severity rubric's *A fix that
+>    guards a symptom*, which says where a cause is). Valid input
+>    handled where it is consumed, and validation at a trust
+>    boundary, are fixes, not guards.
 >
 > 2. **Scan the change for bugs.** Walk each new or changed
 >    behaviour the same way: happy path, each error path,

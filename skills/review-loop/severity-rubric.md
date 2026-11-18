@@ -26,11 +26,12 @@ a bound.
 |---|---|---|
 | `BLOCKER` | Something breaks, leaks or is spent. A user gets wrong behaviour; data is lost, exposed, or collected against the project's own rules; a commitment the project makes to its users is broken (what it says it will never do, collect or show); someone can make another party pay, or make the software unusable, with nothing bounding it; or the build, CI, a release or a step that cannot be undone fails or does damage | a wrong access decision; a secret or a private datum in a log line, an output or a call to a third party; an action that costs money or quota with no limit; work that grows with a user's data until it fails; an upgrade step that cannot apply or destroys data; a crash on an input ordinary use sends |
 | `ISSUE` | Nothing breaks at any state ordinary use reaches, but the change is wrong in a way someone will pay for in time or trust. Code does something other than what it documents; a contract the change promises is not enforced; a rule or practice of the project is not followed; what the software does is right, but what it says about its own work to someone following or diagnosing it is wrong (a count in a summary, a progress line, a log field); output that is the result the user asked for is behaviour, not a report; a test cannot fail; prose would lead a reader to a wrong action | a kind of item left out of a count documented as complete; a status or exit code the documentation does not promise; a documented rule the code does not follow; a documented step that no longer works; a test that passes with the feature deleted |
-| `NIT` | Nothing goes wrong. A reader is slowed or briefly misled, or the code could be tidier, and no behaviour, contract or action changes either way | wording; a comment that describes nearby code inaccurately; a name; an exported symbol nothing uses; duplicated test helpers |
+| `NIT` | Nothing goes wrong. A reader is slowed or briefly misled, or the code could be tidier, and no behaviour, contract or action changes either way | wording; a comment that describes nearby code inaccurately; a name; a stray exported symbol nothing uses; duplicated test helpers |
 
-"Nothing goes wrong, but I would have written it differently" is not a finding. A name that says
-something false about what it names is a `NIT`; a name you would merely have chosen differently
-is not a finding.
+"Nothing goes wrong, but I would have written it differently" is not a finding. A concrete
+alternative that deletes code is rated by the ruling *A simpler alternative*, below. A name that
+says something false about what it names is a `NIT`; a name you would merely have chosen
+differently is not a finding.
 
 ## How to rate
 
@@ -107,26 +108,37 @@ These are the cases where reviewers disagree with each other.
   did not introduce it is a fact the receiver needs beside the label, not a reason to lower it.
 - **A design alternative needs a scenario like anything else.** "This should be an interface",
   "this belongs in another package": `NIT`, unless you can name what goes wrong with the design
-  as built (two copies that will drift and one already has; a caller that cannot be written).
-  A simpler alternative to what the change built is rated by the next ruling.
+  as built (two copies that must agree and nothing holds together; a caller that cannot be
+  written). A simpler alternative to what the change built is rated by the next ruling.
 - **A simpler alternative is an `ISSUE` only when it costs the change something concrete.** The
   alternative must be correct on every path the original handles (its error paths, its edge
   inputs, its concurrent case), and the change as built must pay one of these:
-  - a second copy of logic that already exists, which will drift from the first;
-  - code that no caller, requirement or recorded decision needs;
+  - a second copy of logic that already exists, where the two must agree (a rule, a limit, a
+    format) and nothing holds them together, so an edit to one leaves the other wrong;
+  - a mechanism the change adds that no caller, requirement or recorded decision needs (an
+    option nothing sets, a tool, a code path nothing reaches), which someone must now
+    maintain. A stray unused symbol beside code that is used is a `NIT`;
   - a new dependency or mechanism where something already present (the standard library, the
     platform, a declared dependency, a helper in the repo) does the job as well as the change
     needs;
-  - a fix that guards a symptom (a special case for the reported input, a swallowed error, a
-    retry or a wait around a race, a suppressed or loosened check) while its cause stays
-    reachable by the next caller, input or timing.
+  - a fix that guards a symptom: rated by the next ruling.
 
   Otherwise it is a `NIT`: shorter, cleaner or fewer lines, with none of those costs. It is never
   a `BLOCKER` on simplicity alone: if the design as built breaks something, that is the finding,
   rated as such. An alternative that is itself a hack (it drops an error path, weakens a check,
-  or leaves the cause reachable) is not simpler; it is not a finding. Neither is one that goes
-  against a recorded decision or a seam the repository requires. A guard is not a symptom-guard
-  when it sits where the cause belongs: validating input at a trust boundary is the fix.
+  or leaves a cause reachable) is not simpler; it is not a finding. Neither is one that goes
+  against a recorded decision or a seam the repository requires.
+- **A fix that guards a symptom is at least an `ISSUE`.** A fix guards a symptom when it makes
+  the reported failure go away (a special case for the reported input, a swallowed error, a
+  retry or a wait around a race, a suppressed or loosened check) while its cause stays
+  reachable by the next caller, input or timing. The cause is where the wrong value or state is
+  first made or accepted. If the input is valid, handling it where it is consumed is the fix,
+  not a guard: an empty list a caller may rightly send is handled where the list is read. If
+  it is not valid, a guard downstream hides the caller's defect, and the finding is that defect.
+  A guard at the place the cause belongs is the fix: validating input at a trust boundary.
+  Rate the finding by what the still-reachable cause does: an `ISSUE` when the guard stops the
+  harm and only the cause is left for the next caller to meet; the cause's own label when it
+  still does harm, such as a `BLOCKER` when the guard turns a crash into silently wrong output.
 - **A recorded decision is not a finding.** Its implementation is rated as usual, and a record
   that understates its own cost is an `ISSUE` against the record.
 
@@ -149,9 +161,10 @@ The first column is the finding as raised.
 | An action anyone can trigger calls a third-party service metered to the project's account, and has no limit | `BLOCKER` | A script makes someone else pay without bound. Hand-crafted, and not lowered: the one harmed is not the caller |
 | A new step loads the whole of a collection its users can grow; the largest has 300 items today | `BLOCKER` | Ordinary growth reaches the size where it fails. Rated by what it does then, not by today's data |
 | One user reads another's record by guessing its id | `BLOCKER` | A wrong access decision. It harms someone other than the caller, so "only by hand" does not lower it |
-| A new interface has one implementation and stands at no seam the repository requires; nothing else is wrong with it | `NIT` | A simpler alternative with none of the ruling's costs: nothing drifts, nothing is unneeded but a layer, nothing goes wrong |
+| A new interface has one implementation and stands at no seam the repository requires; nothing else is wrong with it | `NIT` | A simpler alternative with none of the ruling's costs: its callers use it, nothing drifts, nothing goes wrong |
 | A change adds a third-party library for something the standard library already does as well as the feature needs | `ISSUE` | A new dependency where something present does the job: an upgrade to track and code nobody reviews, paid for no gain. Not a `BLOCKER`: nothing breaks |
-| A fix for a crash on an empty list adds an empty-input guard at the crash site; the caller that sends the empty list is unchanged, and a second caller can send one too | `ISSUE` | A fix that guards a symptom while its cause stays reachable: the next caller of the same path meets the same cause |
+| A fix for a crash on an empty list adds an empty-input guard at the crash site. The list was empty because the caller filters out every item on a flag it reads stale, and still does; the job now finishes having done nothing | `BLOCKER` | A fix that guards a symptom, rated by what the cause still does: the user's items are silently not processed. The crash at least said so |
+| A fix for a crash on an empty list makes the function handle an empty list, which callers may rightly send | Not a finding | Valid input handled where it is consumed is the fix, not a guard |
 | A reviewer calls input validation at a public endpoint a symptom-guard and proposes removing it | Not a finding | Validation at a trust boundary is where the cause belongs; removing it would be the hack |
 | A reviewer suspects a dependency rejects a batch above 50 items and that a new path can exceed it, but could not confirm the limit | `BLOCKER`, unverified | Rated as if true: those batches would fail. Marked unverified, with what was tried and that the dependency's limit would confirm it |
 

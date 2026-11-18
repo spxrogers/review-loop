@@ -46,11 +46,12 @@ by_lens: correctness=3 adversarial=2 api-design=1 test-rigor=4 simplicity=1
 - **The scorecard is the first fenced block**, one `key: value` per line, every key present, in
   this order, a count of `0` written as `0`. Its first line names the format's version; a change
   to the keys or to what one counts raises it. v3 added `simplicity` to `by_lens`: the findings
-  of the lens that runs in round 1 only, `0` when no round 1 is in the run.
+  of the lens that runs in round 1 only, always listed, `0` when it raised none.
 - **After it, the report Step 5 requires**, written for a reader with none of the run's context:
   how the run ended, then every finding left open (held, deferred, NITs not fixed), the
   section below on findings sent to another PR, every overrule of a BLOCKER or ISSUE with the
-  lens's words beside the evidence, every one accepted without verification, the issues filed,
+  lens's words beside the evidence (and *not answered: no later round* beside one of the
+  simplicity lens's, which runs in round 1 only), every one accepted without verification, the issues filed,
   and that the loop did not run the full checks on the head.
   When nothing is left open, say so in one line.
 
