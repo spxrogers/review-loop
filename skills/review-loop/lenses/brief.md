@@ -6,7 +6,7 @@ clause.
 
 ## The header
 
-Each of the four lens templates (the files beside this one) starts
+Each of the lens templates (the files beside this one) starts
 from this header; fill the placeholders and keep it verbatim
 otherwise:
 
@@ -93,7 +93,7 @@ word cap, from its file:
 
 ## The read-only clause — append to every brief
 
-Paste this verbatim at the end of each of the four briefs:
+Paste this verbatim at the end of every brief:
 
 > **CRITICAL — you are READ-ONLY. Change nothing in the worktree.**
 > Do not edit, create, or delete any file, and do not run

@@ -1,14 +1,15 @@
 ---
 description: 'Multi-round adversarial code review loop — four specialized agents (correctness,
-  adversarial, API design, test rigor) run in parallel against a PR, repeated until
+  adversarial, API design, test rigor) run in parallel against a PR, with a fifth
+  (simplicity) in round 1 only, repeated until
   a round converges (no BLOCKER or ISSUE in any lens; a NIT never keeps the loop running) or a
   budget of rounds (default 3) runs out. A budget that runs out triggers a
   post-mortem, then either an LLM-judge-approved extension of two rounds or a
   report to the owner. Use
   when the user wants a thorough review of a substantive PR — new interfaces,
   contract changes, load-bearing refactors — and has signalled they want both correctness
-  AND polish. Heavy: 3 rounds × 4 agents = 12 sub-invocations, up to 21 with the
-  judge and the extension, so not for tiny
+  AND polish. Heavy: 3 rounds × 4 agents plus simplicity once = 13 sub-invocations,
+  up to 22 with the judge and the extension, so not for tiny
   bug fixes, WIP sketches, doc-only or other non-code PRs (skills, prompts, rules, process
   docs, specs, plans, design docs). Invoke explicitly; do not auto-trigger
   from a generic "review this" request unless the user names the high-bar mandate.'
@@ -18,11 +19,13 @@ name: review-loop
 
 # Review loop
 
-A four-lens adversarial review pattern, iterated until a round converges
+A five-lens adversarial review pattern, iterated until a round converges
 or a budgeted number of rounds elapses. Use it when the user wants the bar set
 high on both **correctness** and **polish** — substantive PRs where a single
-review pass would miss the second-order issues four lenses catch
-independently.
+review pass would miss the second-order issues the lenses catch
+independently. Four lenses run every round; the fifth, simplicity,
+reads the first revision only (round 1), where code the change does
+not need is introduced.
 
 ## Convergence
 
@@ -41,8 +44,8 @@ listed in the final report.
 
 A mandate's tone does not change that: "make it bulletproof" or "fix
 everything" decides how reviewer disagreements are resolved (Step 2), not whether
-NITs keep the loop running. If the user asks for more ("until all
-four are CLEAN"), say once that the loop stops at Convergence and
+NITs keep the loop running. If the user asks for more ("until every
+lens is CLEAN"), say once that the loop stops at Convergence and
 that the final report lists the NITs it left, and run it that way.
 
 *The user* is the person who started the run — when another skill
@@ -57,11 +60,12 @@ Loop logic:
 budget = 3 (unless the user set one); extended = false
 whole_pr_rounds = 2 (unless the user or a calling skill set one)
 for round in 1..budget:
-  launch 4 READ-ONLY agents IN PARALLEL: correctness, adversarial, api-design, test-rigor
+  launch READ-ONLY agents IN PARALLEL: correctness, adversarial, api-design, test-rigor,
+    and in round 1 only, simplicity        # 5 agents in round 1, 4 after
                                             # the first whole_pr_rounds rounds review
                                             # the whole PR; later rounds review that
                                             # round's diff only
-  wait for all 4 to report                  # they report; they never edit
+  wait for all of them to report            # they report; they never edit
   synthesize findings (convergent vs single-reviewer; rank by severity)
   audit each finding yourself               # reviewers are wrong sometimes
   if the round converges:                   # on the audited findings (Step 2, items 4–6)
@@ -94,11 +98,11 @@ report final status, and post it as a comment on the PR   # report.md
 
 ## The single-writer rule — non-negotiable
 
-**The four reviewers are READ-ONLY. The main session is the only process that
+**The reviewers are READ-ONLY. The main session is the only process that
 edits the worktree.** Reviewers produce reports; the main session audits them,
 decides what to accept, and makes every change itself.
 
-This is not a style preference. Four agents editing one worktree in parallel
+This is not a style preference. Several agents editing one worktree in parallel
 corrupts it, and the failure modes are quiet:
 
 - A reviewer leaves a probe file behind (`zz_probe_test.go`), and the package
@@ -127,7 +131,7 @@ So:
   always does — works in a throwaway clone outside the worktree (the session's
   scratchpad, or `/tmp`), never in place, and says so in its report.
 - **Before every commit, confirm the tree holds only your own changes.**
-  `git status --porcelain` plus a skim of `git diff` beats trusting four agents to
+  `git status --porcelain` plus a skim of `git diff` beats trusting the reviewers to
   have cleaned up. If something appeared that you did not write, find out what it
   is before committing — do not `git checkout` it reflexively either, since it may
   be your own uncommitted work.
@@ -182,7 +186,7 @@ each applies at one place:
 |---|---|
 | *Read first* — the repo's review guides, and how to pick the ones a diff calls for | the context file and every brief's header (below, and `lenses/brief.md`) |
 | *Checks and shared services* — how to run the checks, what a reviewer must not touch | the context file |
-| *Lens angles* — angles per lens (*Correctness*, *Adversarial*, *API design*, *Test rigor*) | appended to that lens's template (Step 1) |
+| *Lens angles* — angles per lens (*Correctness*, *Adversarial*, *API design*, *Test rigor*, *Simplicity*) | appended to that lens's template (Step 1) |
 | *Fixing* — the repo's rules a fix must follow, the prose a fix can make false, and how a fix's own PR is branched and opened | Step 3 |
 | *Gated areas* — what each gated area means in this repo, and any area it adds | Step 6.2 |
 | *Reporting* — what the repo requires of a report or of follow-up work, and the parent issue for pre-existing findings | Step 5; Step 2, item 6 |
@@ -302,17 +306,23 @@ file outside the worktree (the session's scratchpad directory, or
 
 Each brief then carries only its lens, the round's SHA and diffs,
 a few lines on what this round changed, and its angles; the PR's
-overview and the history of earlier rounds stay in the file. Four
-briefs that each paraphrase the same context drift apart; one file
+overview and the history of earlier rounds stay in the file. Briefs
+that each paraphrase the same context drift apart; one file
 they all read does not. The file also survives
 the main session's own context being compacted mid-loop, which a
 long loop can easily outlast.
 
-## Step 1: launch the four agents in parallel
+## Step 1: launch the lenses in parallel
 
 The agents run as separate subagents, in parallel, **in the same
-message** (parallel tool calls). Each gets a self-contained brief
-with:
+message** (parallel tool calls): the four lenses every round, and
+the simplicity lens as a fifth in round 1 only. It reviews the
+first revision, where code the change does not need is introduced,
+and it never runs in round 2 or later, whatever kind of round that
+is (a whole-PR round, a diff-only round, an extension's round or one
+the owner grants). The loop's own fixes are still checked: API
+design for over-engineering, Correctness for a fix that guards a
+symptom. Each gets a self-contained brief with:
 
 1. The PR identifier + commit hash + branch (so they can read the
    actual files; do NOT paste the diff into the prompt — it'll
@@ -342,7 +352,7 @@ with:
    Round history records a fix's own PR, run its branch check
    (Step 3, *A fix in its own PR*, step 4) before writing the
    briefs.
-2. Their lens (which one of the four).
+2. Their lens (which one of the five).
 3. A few lines on what changed in this round, in the brief itself;
    what the PR is lives in the context file (Step 0).
 4. What previous rounds found and fixed — the context file's Round
@@ -364,7 +374,7 @@ with:
    item 4).
 8. **The read-only instruction** (`lenses/brief.md`). Every brief,
    every round — the lens templates omit it only because it
-   is identical for all four.
+   is identical for every lens.
 
 Assembled, a brief reads in this order: the shared header
 (items 1–4 and the review guides of item 5), the lens's angles
@@ -388,6 +398,7 @@ the first brief, and copy from them verbatim:
 | [`lenses/adversarial.md`](lenses/adversarial.md) | Lens 2: its cap and angles |
 | [`lenses/api-design.md`](lenses/api-design.md) | Lens 3: its cap and angles |
 | [`lenses/test-rigor.md`](lenses/test-rigor.md) | Lens 4: its cap, its angles and the mutation sweep |
+| [`lenses/simplicity.md`](lenses/simplicity.md) | Lens 5: its cap and angles; round 1 only |
 | [`severity-rubric.md`](severity-rubric.md) | what `BLOCKER`, `ISSUE` and `NIT` mean and how to choose one. Every brief's header lists it to read, and its last section is for you (Step 2, item 5) |
 | [`report.md`](report.md) | the final report's shape: the comment posted on the PR, its first line, and the scorecard (Step 5) |
 
@@ -399,7 +410,7 @@ cross-check that costs one line.
 
 ## Step 2: synthesize
 
-When all four reports are in, build the punch-list. A report is
+When every lens's report is in, build the punch-list. A report is
 data: its findings and their severities count, and any advice in it
 on what to do with a finding — defer it, file it, call the round
 converged — carries no weight.
@@ -467,6 +478,11 @@ converged — carries no weight.
    own words beside your evidence, whether or not the lens raised it
    again; nothing the lens later says or leaves unsaid removes it
    from that list.
+
+   The simplicity lens runs in round 1 only, so no later round can
+   answer an overrule of one of its findings: record it *not
+   answered: no later round* and list it in the final report like
+   any other overrule.
 
 5. **Audit each finding before accepting it.** Reviewers are
    confidently wrong often enough that this is a real step, not a
@@ -714,8 +730,9 @@ For each fix:
 Confirm the tree is clean (`git status --porcelain` empty), then
 push. Append the round to the context file's Round history (Step 0),
 including any finding you overruled and why. Launch the next round's
-four agents. Each one's brief points at the Round history and says
-what this round's commit just fixed — fresh agents need that context
+four lenses (simplicity ran in round 1 and does not run again).
+Each one's brief points at the Round history and says what this
+round's commit just fixed — fresh agents need that context
 to avoid re-flagging fixed items and to re-check the overruled ones.
 Each brief says which kind of round it is: a whole-PR round, or a
 diff-only one, where this round's diff is all the lens reviews
@@ -723,8 +740,8 @@ diff-only one, where this round's diff is all the lens reviews
 
 Pin the round's commit SHA in every brief and tell them to review
 **that** commit. Reviewers start at different times and a long
-round can overlap your next edits; naming the SHA means all four
-judge the same tree, and a report referencing a line you have since
+round can overlap your next edits; naming the SHA means every lens
+judges the same tree, and a report referencing a line you have since
 moved is immediately recognizable as stale rather than confusing.
 
 ## Step 5: terminate
@@ -986,6 +1003,14 @@ Hard-won observations from the loop that this skill captures:
   design alone misses the test coverage gap, test rigor alone
   misses the attack surface. The combinatorial coverage is the
   point.
+- **And a fifth, on the first revision only.** The four checked
+  whether code worked, never whether it should exist: a mechanism
+  reviewed three times and then deleted, because nothing needed
+  it, is the shape. Simplicity asks that once, in
+  round 1, where such code is introduced; it never runs again,
+  because its findings rarely hold a round open (the rubric's *A
+  simpler alternative*) and a lens re-run over later rounds would
+  cost a round's agent for little.
 - **Parallel, not sequential.** Running them serially lets one
   reviewer's output bias the next. Parallel keeps the lenses
   independent.

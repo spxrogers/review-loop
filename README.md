@@ -1,7 +1,9 @@
 # review-loop
 
 A multi-round code review skill for coding agents. Four reviewers, each with its own lens
-(correctness, adversarial, API design, test rigor), read a pull request in parallel. The main
+(correctness, adversarial, API design, test rigor), read a pull request in parallel, with a fifth,
+simplicity, on the first revision only: is this the simplest approach that correctly solves the
+problem? The main
 session checks what they found, fixes what holds up, and runs another round, until a round turns
 up nothing above a nit or the budget of rounds runs out.
 
@@ -27,7 +29,7 @@ and can start subagents.
   reads only what the last round changed.
 - **It ends with a report** in a fixed format, posted as a comment on the PR.
 
-It is heavy: 12 subagent runs by default, up to 21. It is meant for substantive changes (new
+It is heavy: 13 subagent runs by default, up to 22. It is meant for substantive changes (new
 interfaces, contract changes, load-bearing refactors), not small fixes or doc-only PRs.
 
 ## Layout

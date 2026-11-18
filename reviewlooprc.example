@@ -33,6 +33,11 @@ side of a contract. -->
 
 <!-- What a test here must prove, and how concurrency or platform claims are shown. -->
 
+### Simplicity
+
+<!-- The repo's rules on what not to add (a dependency a built-in covers, a tool for a one-off),
+and the seams it requires, which are never over-engineering here. -->
+
 ## Fixing
 
 <!-- Rules a fix must follow, and the documents a fix can make false. -->
