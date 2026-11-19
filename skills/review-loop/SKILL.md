@@ -57,7 +57,9 @@ Loop logic:
 budget = 3 (unless the user set one); extended = false
 whole_pr_rounds = 2 (unless the user or a calling skill set one)
 for round in 1..budget:
-  launch 4 READ-ONLY agents IN PARALLEL: correctness, adversarial, api-design, test-rigor
+  round 1: launch 4 READ-ONLY agents IN PARALLEL: correctness, adversarial, api-design, test-rigor
+  later rounds: resume those same 4, IN PARALLEL   # Step 4; a lens that cannot be
+                                            # resumed starts fresh
                                             # the first whole_pr_rounds rounds review
                                             # the whole PR; later rounds review that
                                             # round's diff only
@@ -84,12 +86,13 @@ if no round converged:
   launch a background Opus judge on the post-mortem
   if the judge passes: apply the path (Step 6.3), commit + push,
                        budget += 2, extended = true, run the next round
+                       # with 4 fresh agents, resumed in the round after
                        # in those rounds a gated fix outside the path ends the run
   else (FAIL, GATED, no verdict): report to owner; stop
 report final status, and post it as a comment on the PR   # report.md
 # rounds the owner grants after a report: the first applies the fixes held
-# at the report; they end the same way — converged, or another report to
-# the owner — never a second post-mortem or judge
+# at the report, and starts 4 fresh agents; they end the same way —
+# converged, or another report to the owner — never a second post-mortem or judge
 ```
 
 ## The single-writer rule — non-negotiable
@@ -204,10 +207,11 @@ Before launching agents, you have to know what the PR is. Collect:
   against the prior reviewed commit, OR against main on the first
   round.
 - **What previous rounds found and fixed** — carried forward into
-  each round's brief. Fresh subagents don't have the conversation
-  history; they need that context to avoid re-flagging fixed items
-  and items the user deferred, and to re-check the findings you
-  overruled.
+  each round's brief. A reviewer resumed from an earlier round
+  remembers its own findings but not what you decided about them,
+  and a fresh one remembers nothing; both need that context to
+  avoid re-flagging fixed items and items the user deferred, and to
+  re-check the findings you overruled.
 - **The user's mandate**, in their own words: "ship it ASAP",
   "make it bulletproof", "fix everything", etc. This decides what
   to do when reviewers disagree (Step 2, item 3). It never decides
@@ -245,6 +249,11 @@ file outside the worktree (the session's scratchpad directory, or
   [`severity-rubric.md`](severity-rubric.md), beside this file.
   Where the repo's review guides grade an area themselves, that
   grading comes first: name the guide and its section;
+- **each lens's agent id**, from its launch result, for the set of
+  four reviewers now running (Step 4), so a later round can resume
+  each one after your own context is compacted. A new set (the
+  extension, rounds the owner grants, a lens started again)
+  replaces the ids it supersedes;
 - **each lens's report, verbatim**, saved beside the context file as
   it arrives (`round-<n>-<lens>.md`), so the Round history can be
   checked against what the reviewers actually said;
@@ -310,9 +319,14 @@ long loop can easily outlast.
 
 ## Step 1: launch the four agents in parallel
 
+Round 1 starts four agents; later rounds resume the same four with
+a short message (Step 4), and start one fresh only when Step 4
+says to. This step is the full brief, which every fresh agent gets.
+
 The agents run as separate subagents, in parallel, **in the same
-message** (parallel tool calls). Each gets a self-contained brief
-with:
+message** (parallel tool calls). Record each one's agent id in the
+context file as its launch returns. Each gets a self-contained
+brief with:
 
 1. The PR identifier + commit hash + branch (so they can read the
    actual files; do NOT paste the diff into the prompt — it'll
@@ -362,9 +376,9 @@ with:
    lists no findings and ends its report with the line
    `CLEAN — ship it`, so a finished lens is detectable (Step 2,
    item 4).
-8. **The read-only instruction** (`lenses/brief.md`). Every brief,
-   every round — the lens templates omit it only because it
-   is identical for all four.
+8. **The read-only instruction** (`lenses/brief.md`). Every brief
+   and every resume message, every round — the lens templates omit
+   it only because it is identical for all four.
 
 Assembled, a brief reads in this order: the shared header
 (items 1–4 and the review guides of item 5), the lens's angles
@@ -392,10 +406,10 @@ the first brief, and copy from them verbatim:
 | [`report.md`](report.md) | the final report's shape: the comment posted on the PR, its first line, and the scorecard (Step 5) |
 
 **The read-only clause is pasted verbatim at the end of every
-brief, every round**, never summarized: `general-purpose` agents
-have write tools and will use them to be helpful, and a reviewer
-that reports "tree clean" gives the main session a cheap
-cross-check that costs one line.
+brief and every resume message, every round**, never summarized:
+`general-purpose` agents have write tools and will use them to be
+helpful, and a reviewer that reports "tree clean" gives the main
+session a cheap cross-check that costs one line.
 
 ## Step 2: synthesize
 
@@ -704,17 +718,49 @@ For each fix:
 
 Confirm the tree is clean (`git status --porcelain` empty), then
 push. Append the round to the context file's Round history (Step 0),
-including any finding you overruled and why. Launch the next round's
-four agents. Each one's brief points at the Round history and says
-what this round's commit just fixed — fresh agents need that context
-to avoid re-flagging fixed items and to re-check the overruled ones.
-Each brief says which kind of round it is: a whole-PR round, or a
-diff-only one, where this round's diff is all the lens reviews
-(Step 1, item 1).
+including any finding you overruled and why. Then send the next
+round to the same four reviewers.
 
-Pin the round's commit SHA in every brief and tell them to review
-**that** commit. Reviewers start at different times and a long
-round can overlap your next edits; naming the SHA means all four
+### The next round resumes the same four reviewers
+
+An author takes an updated PR back to the teammate who reviewed it,
+not to a stranger, and the loop does the same. A resumed lens knows
+what it meant by each finding, so it checks a fix against that
+intent rather than against the Round history's one line; it answers
+an overrule with its own reasoning still at hand; and it has already
+read the guides, the rubric and the PR, so its message is short.
+
+Continue each lens's agent by its id from the context file (in
+Claude Code, `SendMessage` to that id; it resumes the finished agent
+from its transcript), all four **in the same message**, each with
+the resume message in `lenses/brief.md` → *The resume message*. It
+names the round's SHA and diffs, says which kind of round it is
+(Step 1, item 1), says what this round's commit fixed, points at
+the Round history for what you decided about each of that lens's
+findings, and warns that every file the lens read earlier was at
+an older SHA: a reviewer that cites a line from memory of the old
+tree reports a defect you have already fixed, or misses the one
+your fix made.
+
+Start a lens **fresh**, with the full brief (Step 1), when:
+
+- **it cannot be resumed** — your agent cannot continue a finished
+  subagent, the continuation fails, its id is lost, or the lens says
+  it no longer holds its earlier rounds. Only that lens starts
+  fresh; record it in the Round history, with the round, and its
+  new id in the context file;
+- **the run starts a new set of reviewers** — the first round of
+  the extension (Step 6.3) and the first round the owner grants
+  after a report (Step 5). All four start fresh, and the rounds
+  after resume the new set. By then these reviewers have not
+  converged, their transcripts carry the whole run, and the path
+  ahead is new ground: fresh readers are not anchored to the
+  arguments that kept the loop open. The judge is always fresh.
+
+Pin the round's commit SHA in every brief and resume message, and
+tell them to review **that** commit. Reviewers start at different
+times and a long round can overlap your next edits; naming the SHA
+means all four
 judge the same tree, and a report referencing a line you have since
 moved is immediately recognizable as stale rather than confusing.
 
@@ -750,7 +796,8 @@ for any of them:
   the Round history so), and a ship-it / defer /
   rethink recommendation. Never present open findings as done.
 - **Rounds the owner grants after a report** (at the round gate, or
-  after the extension) run as rounds do — fix, push, next round —
+  after the extension) start four fresh reviewers (Step 4) and then
+  run as rounds do — fix, push, next round —
   with the last granted round holding its fixes, and end the same
   way: if one converges, stop; if none does, report to the owner
   again. The post-mortem and the judge do not run again. A report
@@ -933,7 +980,8 @@ attached is read as FAIL; a body that doubts the safety check is
 read as GATED. Wait for it; do no fixing while it runs.
 
 - **`JUDGE: PASS`** — grant two more rounds: apply the path
-  (Step 3), commit and push, and run the next round. Record the
+  (Step 3), commit and push, and run the next round with four
+  fresh reviewers (Step 4). Record the
   extension and the judge's reasoning in the Round history. In the
   extension's rounds, a fix outside the judged path that would touch
   a gated area ends the run (Step 5).

@@ -25,10 +25,15 @@ and can start subagents.
   grants two more rounds or the loop reports to the person who owns the decision.
 - **Later rounds review the fixes.** The first two rounds read the whole PR; after that a round
   reads only what the last round changed.
+- **Later rounds go back to the same reviewers.** Like taking an updated PR back to the teammate
+  who reviewed it, each round resumes the four reviewers from the round before, so each one checks
+  the fixes against what it meant. The extension, and any rounds the owner grants after a report,
+  start four fresh ones.
 - **It ends with a report** in a fixed format, posted as a comment on the PR.
 
-It is heavy: 12 subagent runs by default, up to 21. It is meant for substantive changes (new
-interfaces, contract changes, load-bearing refactors), not small fixes or doc-only PRs.
+It is heavy: 12 subagent runs by default (four reviewers, resumed each round), up to 21. It is
+meant for substantive changes (new interfaces, contract changes, load-bearing refactors), not
+small fixes or doc-only PRs.
 
 ## Layout
 

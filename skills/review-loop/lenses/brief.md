@@ -2,7 +2,9 @@
 
 A brief is assembled in this order (SKILL.md, Step 1): the header
 below, the lens's own template, the report contract, the read-only
-clause.
+clause. A lens resumed for a later round gets the resume message
+instead (SKILL.md, Step 4), which closes with the same report
+contract and read-only clause.
 
 ## The header
 
@@ -58,6 +60,41 @@ otherwise:
 > listed there too, with the user's words, and so are NITs *held
 > for the exit* and pre-existing findings already recorded: do not
 > raise any of those again.
+
+## The resume message
+
+A later round sends each lens this instead of a brief, when the lens
+is resumed rather than started fresh (SKILL.md, Step 4). Fill the
+placeholders, take the round-kind lines from the header above
+verbatim, and keep the rest verbatim otherwise; then append the
+report contract and the read-only clause, as a brief does:
+
+> Round <n> of the <LENS> review of <PR>: the main session has
+> pushed fixes. Review commit <sha> on branch <branch>. The whole
+> PR is `git diff <base>..<sha>`.
+> <The header's round-kind lines for this round, from "This is a
+> whole-PR round" or "This is a diff-only round" to their end.>
+> <A whole-PR round:> Read the whole change again as if you had
+> not: what you missed last round is what this pass is for.
+> <A few lines on what this round's commit changed and fixed.>
+>
+> **Everything you read earlier was at an older commit (last
+> round's was <previous-sha>), and the tree has changed since.** Re-read at <sha> every file you cite, and
+> every line a finding of yours rests on; a finding taken from your
+> memory of the old tree is stale.
+>
+> **Then read the Round history** in the context file at
+> <context-file>, round <n-1> in full, and every entry for a
+> finding your lens raised. For each finding of yours that was
+> fixed, check that the fix does what you meant, not only what the
+> entry says. Answer each overrule of your findings, each one filed
+> as *out of scope* and each *pre-existing, worsened by the PR*
+> filed as plain pre-existing, as your first brief said: raise it
+> again and say why the evidence is wrong, or drop it. Do not raise
+> again what the user deferred, a NIT *held for the exit*, or a
+> pre-existing finding already recorded. Your guides and the
+> severity rubric are the ones your first brief named; re-read one
+> when a finding turns on it.
 
 ## The report contract
 
