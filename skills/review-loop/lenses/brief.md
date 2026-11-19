@@ -70,18 +70,30 @@ verbatim, and keep the rest verbatim otherwise; then append the
 report contract and the read-only clause, as a brief does:
 
 > Round <n> of the <LENS> review of <PR>: the main session has
-> pushed fixes. Review commit <sha> on branch <branch>. The whole
-> PR is `git diff <base>..<sha>`.
-> <The header's round-kind lines for this round, from "This is a
-> whole-PR round" or "This is a diff-only round" to their end.>
+> pushed fixes. If you no longer have your first brief for this
+> review (your lens's angles, the context file, the guides it
+> named), say so on the first line of your reply and stop there.
+>
+> Review commit <sha> on branch <branch>. The whole PR is
+> `git diff <base>..<sha>`.
+> <The header's round-kind lines for this round: from "This is a
+> whole-PR round" or "This is a diff-only round" up to, not
+> including, its "From round 2" placeholder.>
 > <A whole-PR round:> Read the whole change again as if you had
 > not: what you missed last round is what this pass is for.
 > <A few lines on what this round's commit changed and fixed.>
+> <After a rebase onto a fix's own PR since your last round:> This
+> branch was rebased onto <base> since your last round, so the
+> commit you last reviewed is no longer an ancestor; <previous-sha>
+> is its rewritten equivalent. Diff only from the SHAs named here,
+> never from one you remember. <What resolving a conflict changed,
+> when one was needed.>
 >
-> **Everything you read earlier was at an older commit (last
-> round's was <previous-sha>), and the tree has changed since.** Re-read at <sha> every file you cite, and
-> every line a finding of yours rests on; a finding taken from your
-> memory of the old tree is stale.
+> **Everything you read earlier was at an older commit, and the
+> tree has changed since.** Re-read at <sha> every file you cite,
+> and every line a finding of yours rests on; a finding taken from
+> your memory of the old tree is stale. Make any throwaway clone
+> afresh at <sha>: one from an earlier round holds the old tree.
 >
 > **Then read the Round history** in the context file at
 > <context-file>, round <n-1> in full, and every entry for a
@@ -94,7 +106,10 @@ report contract and the read-only clause, as a brief does:
 > again what the user deferred, a NIT *held for the exit*, or a
 > pre-existing finding already recorded. Your guides and the
 > severity rubric are the ones your first brief named; re-read one
-> when a finding turns on it.
+> when a finding turns on it. <Anything added to the context file
+> since your last round — a decision, a review guide — by section
+> or path:> Read it; it applies to you as if your first brief had
+> named it.
 
 ## The report contract
 

@@ -58,8 +58,7 @@ budget = 3 (unless the user set one); extended = false
 whole_pr_rounds = 2 (unless the user or a calling skill set one)
 for round in 1..budget:
   round 1: launch 4 READ-ONLY agents IN PARALLEL: correctness, adversarial, api-design, test-rigor
-  later rounds: resume those same 4, IN PARALLEL   # Step 4; a lens that cannot be
-                                            # resumed starts fresh
+  later rounds: resume those same 4, IN PARALLEL   # Step 4 says when to start fresh
                                             # the first whole_pr_rounds rounds review
                                             # the whole PR; later rounds review that
                                             # round's diff only
@@ -249,8 +248,8 @@ file outside the worktree (the session's scratchpad directory, or
   [`severity-rubric.md`](severity-rubric.md), beside this file.
   Where the repo's review guides grade an area themselves, that
   grading comes first: name the guide and its section;
-- **each lens's agent id**, from its launch result, for the set of
-  four reviewers now running (Step 4), so a later round can resume
+- **each lens's agent id**, from its launch result, for the current
+  set of four reviewers (Step 4), so a later round can resume
   each one after your own context is compacted. A new set (the
   extension, rounds the owner grants, a lens started again)
   replaces the ids it supersedes;
@@ -260,8 +259,8 @@ file outside the worktree (the session's scratchpad directory, or
 - a **Round history** section, appended after every round. The
   final report's scorecard is counted from it
   ([`report.md`](report.md)), so write each round's entries when
-  the round ends. Each round records which kind it was (whole-PR or
-  diff-only), any extension the judge granted with its reasoning
+  the round ends. Each round records the commit it reviewed, which
+  kind it was (whole-PR or diff-only), any extension the judge granted with its reasoning
   (Step 6), each later rebase onto a fix's own PR, once its branch
   has moved, with its new base and the rewritten previous SHA
   (Step 3), and each finding:
@@ -320,8 +319,8 @@ long loop can easily outlast.
 ## Step 1: launch the four agents in parallel
 
 Round 1 starts four agents; later rounds resume the same four with
-a short message (Step 4), and start one fresh only when Step 4
-says to. This step is the full brief, which every fresh agent gets.
+a short message, and start fresh agents only where Step 4 says
+to. This step is the full brief, which every fresh agent gets.
 
 The agents run as separate subagents, in parallel, **in the same
 message** (parallel tool calls). Record each one's agent id in the
@@ -355,7 +354,7 @@ brief with:
    a diff from it shows the fix PR's change as this PR's. If the
    Round history records a fix's own PR, run its branch check
    (Step 3, *A fix in its own PR*, step 4) before writing the
-   briefs.
+   round's briefs or resume messages.
 2. Their lens (which one of the four).
 3. A few lines on what changed in this round, in the brief itself;
    what the PR is lives in the context file (Step 0).
@@ -694,14 +693,14 @@ For each fix:
      in the Round history the fix's PR, its head, and the rewritten
      previous SHA (Step 1, item 1, reads them). A rebase that needed a
      conflict resolved is reviewed by no round diff: say what it
-     changed in the next brief. Then make the round's other fixes on
-     top.
+     changed in the next round's briefs and resume messages. Then
+     make the round's other fixes on top.
   3. Tell the user in a line: the fix's PR, and that this PR now
      merges after it. This loop's rounds review this PR only; the
      fix's PR gets the repo's own review.
-  4. Check the fix's branch before each round's launch and before
-     every report. When it moves — a later fix pushed to it, its
-     review's changes, or its merge — run `git rebase --onto <new
+  4. Check the fix's branch before each round's launch or resume,
+     and before every report. When it moves — a later fix pushed to
+     it, its review's changes, or its merge — run `git rebase --onto <new
      base> <fix head recorded>` (after a squash merge the new base is
      the base branch, which holds the fix but not its commits),
      point this PR's base there, push as in step 2, and record the
@@ -735,20 +734,27 @@ Claude Code, `SendMessage` to that id; it resumes the finished agent
 from its transcript), all four **in the same message**, each with
 the resume message in `lenses/brief.md` → *The resume message*. It
 names the round's SHA and diffs, says which kind of round it is
-(Step 1, item 1), says what this round's commit fixed, points at
-the Round history for what you decided about each of that lens's
-findings, and warns that every file the lens read earlier was at
-an older SHA: a reviewer that cites a line from memory of the old
-tree reports a defect you have already fixed, or misses the one
-your fix made.
+(Step 1, item 1), says what this round's commit fixed and any
+rebase onto a fix's own PR since the last round (Step 3), names
+what was added to the context file since then, points at the Round
+history for what you decided about each of that lens's findings,
+and warns that every file the lens read earlier was at an older
+SHA: a reviewer that cites a line from memory of the old tree
+reports a defect you have already fixed, or misses the one your
+fix made. It also asks the lens to stop and say so if it no longer
+has its first brief: a lens whose transcript lost its brief would
+otherwise review without its angles and report as if it had them.
 
 Start a lens **fresh**, with the full brief (Step 1), when:
 
-- **it cannot be resumed** — your agent cannot continue a finished
-  subagent, the continuation fails, its id is lost, or the lens says
-  it no longer holds its earlier rounds. Only that lens starts
-  fresh; record it in the Round history, with the round, and its
-  new id in the context file;
+- **it cannot be resumed** — the send fails, its id is lost, or its
+  reply says it no longer has its first brief. Start it fresh in the
+  same round, discarding anything that reply reviewed; record it in
+  the Round history, with the round, and its new id in the context
+  file. The other lenses carry on resumed;
+- **your agent cannot continue a finished subagent at all** — then
+  every round starts four fresh agents, as round 1 does. Say so once
+  in the Round history, not per lens, and record no ids;
 - **the run starts a new set of reviewers** — the first round of
   the extension (Step 6.3) and the first round the owner grants
   after a report (Step 5). All four start fresh, and the rounds
@@ -1106,10 +1112,11 @@ Hard-won observations from the loop that this skill captures:
   "ship it" point at opposite responses to reviewer disagreements.
   Get it before the first round; carry it through every
   synthesis.
-- **Reviewers reverse themselves.** It's normal for round-N's
-  API design reviewer to say "keep the two copies" and round-N+1's
-  to say "consolidate them". They're reading a different tree; the
-  rationale often changes as the surface stabilises.
+- **Reviewers reverse themselves.** It's normal for the API design
+  lens to say "keep the two copies" in round N and "consolidate
+  them" in round N+1, even when it is the same resumed agent. It is
+  reading a different tree; the rationale often changes as the
+  surface stabilises.
 - **Break-verify every non-trivial fix.** The number-one source
   of "test passes for the wrong reason" is a fix that doesn't
   actually exercise the thing it claims to. Sed-corrupt, run the
