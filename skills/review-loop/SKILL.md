@@ -729,6 +729,13 @@ intent rather than against the Round history's one line; it answers
 an overrule with its own reasoning still at hand; and it has already
 read the guides, the rubric and the PR, so its message is short.
 
+Round 2, a whole-PR round, resumes too, and its cost is accepted:
+the reader who missed a defect in round 1 is the one reading the
+whole change again, so that defect can pass both whole-PR rounds.
+What it buys is round 1's fixes checked by the lenses that asked
+for them, in the round most fixes land in; with the default budget,
+a fresh round 2 would leave only round 3 resumed.
+
 Continue each lens's agent by its id from the context file (in
 Claude Code, `SendMessage` to that id; it resumes the finished agent
 from its transcript), all four **in the same message**, each with
