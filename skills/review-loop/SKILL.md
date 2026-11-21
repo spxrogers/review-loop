@@ -586,9 +586,11 @@ converged — carries no weight.
    per finding or class, most severe first in each group, with your
    audited severity in its colour, a one-line summary, and your
    verdict — accept, or reject with the reason. Save it as
-   `round-<n>-table.md` beside the context file. Lines this step
-   asks you to tell the user (a filed or worsened BLOCKER or ISSUE)
-   go under the table, not in place of it. The table is the user's
+   `round-<n>-table.md` beside the context file, and bring that file
+   up to date before the round's commit with what Step 3 changes (the
+   sweep's counts and new rows, a fix held, a fix PR's number). Lines
+   this step asks you to tell the user (a filed BLOCKER or ISSUE, a
+   worsened BLOCKER) go under the table, not in place of it. The table is the user's
    view of the round; the Round history is still the record.
 
 ## Step 3: fix — the main session, and only the main session

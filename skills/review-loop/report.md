@@ -60,7 +60,8 @@ by_lens: correctness=3 adversarial=2 api-design=1 test-rigor=4
 ## The judge
 
 When the run reached Step 6, a section headed `### The judge`, straight after the line on how
-the run ended: the verdict line as the judge wrote it, its reasoning in its own words (two to
+the run ended: the verdict as Step 6.3 read it, the verdict line as the judge wrote it when
+the two differ, its reasoning in its own words (two to
 four lines), and what followed (the rounds it granted and whether they converged, or that the
 run stopped). When the safety check stopped the run before a judge ran, the section is headed
 `### The round gate` and names the gated areas, or the findings awaiting the user. A run that
@@ -71,8 +72,9 @@ never reached Step 6 has neither section.
 When a round converges, whichever round it is (within the budget, in the extension, or in a
 round the owner granted), a section headed `### Rounds`: every round's table
 ([`progress.md`](progress.md)), in order, copied from the saved `round-<n>-table.md` files,
-**without its NIT rows**. A row is a NIT row when its severity column starts with 🟡: a finding
-rated down to a NIT is dropped, and an ISSUE rejected as false stays, since it is an overrule.
+**without its NIT rows**. A row is a NIT row when its severity column starts with 🟡: rows go
+by your audited severity, so a finding rated down to a NIT is dropped, and an ISSUE rejected as
+false keeps the lens's label and stays. Every overrule is listed in its own section either way.
 A lens group left with no rows becomes the one row `**<lens>** — no BLOCKER or ISSUE`; a round
 left with none at all keeps its heading and tally, and the line `No BLOCKER or ISSUE.` in place
 of its table. Verdicts are brought up to date: a row held at a round gate and fixed later says
@@ -85,7 +87,8 @@ the granted rounds run out, a gated fix in an extension), there is no per-round 
 a section headed `### Holding the run open`: one table in the round table's shape
 ([`progress.md`](progress.md)), holding **only the BLOCKERs and ISSUEs still open** — the ones
 that kept the last round from converging. That is a row whose verdict is `✅ Accept · held`,
-`⏸ Awaiting you`, or `✅ Accept → own PR #<n>` not yet merged under this branch. Nothing else
+`⏸ Awaiting you`, or `✅ Accept → own PR #<n>` whose fix this branch does not yet sit on
+(Step 2, item 6). Nothing else
 goes in it: no NIT, no row already fixed, filed or deferred, no row rejected (overrules have
 their own section). Its heading names the head SHA and the last round; a row raised in an
 earlier round says which at the end of its summary (`(round 2)`). Rows are grouped by lens

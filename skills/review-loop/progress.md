@@ -23,8 +23,12 @@ they are read by agents and scripts, and searched as text.
 ## The round table
 
 Shown once per round, when its audit is done (Step 2), before any fix is made, and saved
-beside the context file as `round-<n>-table.md`. The final report's recap is copied from those
-files, never rebuilt from memory: the conversation may have been compacted by then.
+beside the context file as `round-<n>-table.md`. The saved file is brought up to date before the
+round's commit with what Step 3 learns: the class sweep's count (`×3`), a row for each instance
+the sweep finds outside the PR's change, a fix that had to be held, the number of a fix's own
+PR. It is updated again when a later event changes a verdict (a deferral granted, a held fix
+made). The final report's recap is copied from those files, never rebuilt from memory: the
+conversation may have been compacted by then.
 
 ````markdown
 ### Round 2 of 3 · whole PR · `a1b2c3d`
@@ -34,22 +38,26 @@ files, never rebuilt from memory: the conversation may have been compacted by th
 | Severity | Finding | Verdict |
 |---|---|---|
 | **correctness** | | |
+| 🟠 ISSUE | Unescaped `title` in the export header ×3 (+ adversarial) | ✅ Accept |
 | 🟠 ISSUE | `parse.ts:88` retry loses the cursor on a 429 | ✅ Accept |
 | 🟡 NIT | Stale comment above `flush()` | ✅ Accept · exit |
 | **adversarial** | | |
-| 🟠 ISSUE | Unescaped `title` in the export header ×3 (+ correctness) | ✅ Accept |
-| 🟡 NIT ← 🟠 | Log line can exceed 60 KB | ✅ Accept — rated down: field capped at parse |
+| 🟡 NIT ← 🟠 | Log line can exceed 60 KB | ✅ Accept — rated down: field capped at parse · exit |
 | **api-design** 💚 CLEAN | | |
 | **test-rigor** | | |
 | 🟠 ISSUE | Timeout test passes with the timeout dropped | ❌ Reject — `wrapper.test.ts:40` pins it |
 | 🟡 NIT | Duplicated fixture helpers | ✅ Accept → filed: out of scope |
 ````
 
-**The heading** names the round, the budget, the kind of round (`whole PR`, `diff only`, or
-`extension 1 of 2 · judge PASS`, or `granted by owner`) and the short SHA the lenses reviewed.
+**The heading** is `Round <n> of <m>`, where `<m>` is the rounds the run has so far (the
+budget, plus the extension or the rounds the owner granted); then the kind of round, `whole PR`
+or `diff only`; then, in an extension, `extension <k> of 2 · judge PASS`, or in a round the
+owner granted, `granted <k> of <j>`; then the short SHA the lenses reviewed:
+``### Round 4 of 5 · diff only · extension 1 of 2 · judge PASS · `e2d9f40` ``.
 **The tally under it** counts the audited BLOCKERs, ISSUEs and NITs of the round's rows, a
-rejected row not included, and says how the round ends: `converged`, `not converged`, or
-`round gate — fixes held`.
+rejected row not included, and says how the round ends: `converged`, `not converged`,
+`round gate — fixes held`, or `awaiting you`. A later event that settles the round (a deferral
+granted that leaves nothing open) updates the saved tally.
 
 **Rows are grouped by lens**, in the order correctness, adversarial, api-design, test-rigor. A
 lens's group opens with a row holding only its name in bold. A lens with no findings is one row,
@@ -60,10 +68,12 @@ finding more than one lens raised comes first.
 
 - **A class** is one row, its count in the summary (`×3`), never one row per instance.
 - **A finding several lenses raised** is one row, in the group of the first of them in the order
-  above, with the others named at the end of the summary (`(+ correctness)`).
+  above, with the others named at the end of the summary (`(+ adversarial)`).
 - **A finding a lens raises again** in a later round is not a new row in that round: the
   earlier round's row stands. A repeat that changes the verdict (a withdrawn overrule, the
-  lens's answer to a filed finding) is a row again, its verdict saying what changed.
+  lens's answer to a filed finding) is a row again, its verdict saying what changed. A lens
+  whose report held only repeats that change nothing is the one row
+  `**<lens>** — repeats only (see round <n>)`: it listed findings, so it is not CLEAN.
 
 **Severity** is your audited rating. When it differs from the lens's, the lens's follows an
 arrow: `🟡 NIT ← 🟠`. A row rejected as false keeps the lens's own label, and sorts by it.
@@ -72,24 +82,31 @@ arrow: `🟡 NIT ← 🟠`. A row rejected as false keeps the lens's own label, 
 what is wrong, in a dozen words or so. The scenario, the evidence and the lens's words stay in
 the Round history; the table is how the user scans the round, and it has to fit a phone.
 
-**Verdict** says first whether you accept the finding as real, then, after it, what happens to
-it:
+**Verdict** is the acceptance, then what happens to the finding, in that order:
+`<acceptance> <outcome>`.
 
-| Verdict | When |
+| Acceptance | When |
 |---|---|
-| `✅ Accept` | a BLOCKER or ISSUE fixed in this round's commit |
-| `✅ Accept · held` | a BLOCKER or ISSUE held at the round gate (Step 6) |
-| `✅ Accept · unverified` | accepted with the audit skipped (Step 2, item 5) — a lapse, and shown as one |
-| `✅ Accept · exit` | a NIT held for the exit (Step 3) |
+| `✅ Accept` | true, audited, at the lens's label or above |
 | `✅ Accept — rated down: <reason>` | true, but rated below the lens's label: an overrule (Step 2, item 4) |
-| `✅ Accept → filed: pre-existing` | filed (Step 2, item 6) |
-| `✅ Accept → filed: out of scope` | filed, the chain in the Round history |
-| `✅ Accept → own PR #<n>` | pre-existing, worsened by the PR, fixed in its own PR (Step 3) |
-| `⏸ Awaiting you — <question>` | a proposed deferral, a disagreement the mandate leaves to the user, or a finding neither of you can verify |
-| `❌ Reject — <reason>` | dropped as false: an overrule. The reason is the evidence, in a few words |
+| `✅ Accept — overrule withdrawn` | rejected or rated down in an earlier round; the lens's answer convinced you |
+| `✅ Accept — unverified` | accepted with the audit skipped (Step 2, item 5): a lapse, and shown as one |
+| `⏸ Awaiting you — <question>` | a proposed deferral, a disagreement the mandate leaves to the user, a finding neither of you can verify, or a fix in its own PR the session cannot open or force-push |
+| `❌ Reject — <reason>` | dropped as false: an overrule. The reason is the evidence, in a few words. It takes no outcome |
 
-A deferral the user grants later changes the row's verdict to `↪ Deferred by you` in the saved
-table, and in the next round's table as a row of its own.
+| Outcome | When |
+|---|---|
+| *(none)* | a BLOCKER or ISSUE fixed in this round's commit |
+| `· held` | a BLOCKER or ISSUE held: at the round gate, or a gated fix in an extension (Steps 5–6) |
+| `· exit` | a NIT held for the exit (Step 3) |
+| `→ filed: pre-existing` | filed (Step 2, item 6) |
+| `→ filed: out of scope` | filed, the chain in the Round history |
+| `→ own PR #<n>` | pre-existing, worsened by the PR, fixed in its own PR (Step 3) |
+
+So `✅ Accept — rated down: field capped at parse · exit`, or `✅ Accept — unverified · held`.
+
+A deferral the user grants later changes the row's verdict, in the saved table, to
+`↪ Deferred by you`. It adds no row to the next round's table, since no lens raised it again.
 
 ## The judge's verdict
 
@@ -119,10 +136,14 @@ test failed:
 - `## ⚖️ Judge: FAIL ❌ — the run stops; report to the owner follows`
 - `## ⚖️ Judge: GATED ‼️🛑 — <areas>; the run stops; report to the owner follows`
 
-A PASS with conditions attached is a FAIL (Step 6.3), and is shown as one. **No verdict** is
-only a report that ends without a `JUDGE:` line: one that broke off, or ended on prose. It has
-no test lines, since the judge stated none the loop can read. Its block is the heading, the
-report's last two or three lines as the judge wrote them, and the next step:
+The heading gives the verdict as Step 6.3 reads it, not only as the judge wrote it. A PASS
+with conditions attached is read as a FAIL, and its test lines are the conditions. A body that
+doubts the safety check is read as GATED, whatever its last line says.
+
+**No verdict** is a report none of those readings applies to: it ends without a `JUDGE:` line
+(it broke off, or ended on prose) and nothing in it is read as GATED. It has no test lines,
+since the judge stated none the loop can read. Its block is the heading, the report's last two
+or three lines as the judge wrote them, and the next step:
 
 ````markdown
 ---
@@ -136,9 +157,22 @@ report's last two or three lines as the judge wrote them, and the next step:
 ---
 ````
 
-When the safety check stops the run before a judge is launched (Step 6.2), the same block is
-shown with the heading `## ⛔ Round gate: <gated areas, or awaiting your answer> — no judge;
-report to the owner follows`.
+When the safety check stops the run before a judge is launched (Step 6.2), a block of the
+same shape is shown, between rules. Its body lists what stopped the run: each gated area the
+path modifies, with its files, or each finding awaiting the user, with its question:
+
+````markdown
+---
+
+## ⛔ Round gate: <gated areas, or awaiting your answer> — no judge; report to the owner follows
+
+- **<area>:** `<file>`, `<file>`
+- **<finding>:** <the question for the user>
+
+**Next:** report to the owner. The held findings stay unfixed until the owner grants a round.
+
+---
+````
 
 After a PASS, every extension round's table heading carries `extension <k> of 2 · judge PASS`,
 so the reason the run is still going is on the screen at every round. Every final report of a
