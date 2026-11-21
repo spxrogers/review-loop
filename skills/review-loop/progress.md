@@ -100,7 +100,7 @@ arrives, before anything else is done with it, set apart by a rule above and bel
 ````markdown
 ---
 
-## ⚖️ Judge: PASS — two more rounds granted (rounds 4–5)
+## ⚖️ Judge: PASS ✅ — two more rounds granted (rounds 4–5)
 
 > <the judge's reasoning, in its own words, two to four lines>
 
@@ -116,7 +116,7 @@ arrives, before anything else is done with it, set apart by a rule above and bel
 For the other verdicts the heading says what happens to the run, and the three lines say which
 test failed:
 
-- `## ⚖️ Judge: FAIL — the run stops; report to the owner follows`
+- `## ⚖️ Judge: FAIL ❌ — the run stops; report to the owner follows`
 - `## ⚖️ Judge: GATED — <areas>; the run stops; report to the owner follows`
 - `## ⚖️ Judge: no verdict — the run stops; report to the owner follows`
 
