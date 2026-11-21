@@ -117,8 +117,8 @@ For the other verdicts the heading says what happens to the run, and the three l
 test failed:
 
 - `## ⚖️ Judge: FAIL ❌ — the run stops; report to the owner follows`
-- `## ⚖️ Judge: GATED — <areas>; the run stops; report to the owner follows`
-- `## ⚖️ Judge: no verdict — the run stops; report to the owner follows`
+- `## ⚖️ Judge: GATED ‼️🛑 — <areas>; the run stops; report to the owner follows`
+- `## ⚖️ Judge: no verdict 🙋❓ — the run stops; report to the owner follows`
 
 When the safety check stops the run before a judge is launched (Step 6.2), the same block is
 shown with the heading `## ⛔ Round gate: <gated areas, or awaiting your answer> — no judge;
