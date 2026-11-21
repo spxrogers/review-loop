@@ -395,7 +395,7 @@ the first brief, and copy from them verbatim:
 | [`lenses/test-rigor.md`](lenses/test-rigor.md) | Lens 4: its cap, its angles and the mutation sweep |
 | [`severity-rubric.md`](severity-rubric.md) | what `BLOCKER`, `ISSUE` and `NIT` mean and how to choose one. Every brief's header lists it to read, and its last section is for you (Step 2, item 5) |
 | [`progress.md`](progress.md) | what the user sees while the loop runs: the severity colours, the round table (Step 2, item 7) and the judge's verdict (Step 6) |
-| [`report.md`](report.md) | the final report's shape: the comment posted on the PR, its first line, the scorecard, and the recap of the rounds (Step 5) |
+| [`report.md`](report.md) | the final report's shape: the comment posted on the PR, its first line, the scorecard, the recap of the rounds at Convergence, and what holds open a run that stops short (Step 5) |
 
 **The read-only clause is pasted verbatim at the end of every
 brief, every round**, never summarized: `general-purpose` agents
@@ -787,10 +787,11 @@ fixed or still *held for the exit* — and every overrule of a BLOCKER or ISSUE 
 item 4), and every BLOCKER or ISSUE accepted without verification
 (Step 2, item 5), with what its fix changed. Findings filed, and
 fixes made in their own PR, go in its `### Sent to another PR`
-section ([`report.md`](report.md)). The report also recaps every
-round's table without its NIT rows, repeats the judge's verdict when
-the judge ran, and, at Convergence, lists the NITs fixed on the way
-out ([`report.md`](report.md)). If the Round history records a
+section ([`report.md`](report.md)). The report repeats the judge's
+verdict when the judge ran. At Convergence it recaps every round's
+table without its NIT rows and lists the NITs fixed on the way out;
+at any other ending it shows instead one table of the BLOCKERs and
+ISSUEs still holding the run open ([`report.md`](report.md)). If the Round history records a
 fix's own PR, run its branch check (Step 3, *A fix in its own PR*,
 step 4) before writing the report. A *pre-existing*, *out of
 scope* or

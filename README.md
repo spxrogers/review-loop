@@ -28,9 +28,10 @@ and can start subagents.
 - **Every round shows a table**: the round's findings grouped by lens, most severe first, each
   with its severity (🔴 BLOCKER, 🟠 ISSUE, 🟡 NIT), a one-line summary, and whether the main
   session accepted it or, with a reason, rejected it. A judge's verdict is set apart on its own.
-- **It ends with a report** in a fixed format, posted as a comment on the PR. It recaps every
-  round's table without the nits, repeats the judge's verdict, and lists the nits fixed on the
-  way out.
+- **It ends with a report** in a fixed format, posted as a comment on the PR, repeating the
+  judge's verdict. At convergence it recaps every round's table without the nits and lists the
+  nits fixed on the way out; a run that stops short shows only the blockers and issues still
+  holding it open.
 
 It is heavy: 12 subagent runs by default, up to 21. It is meant for substantive changes (new
 interfaces, contract changes, load-bearing refactors), not small fixes or doc-only PRs.
