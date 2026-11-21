@@ -164,7 +164,7 @@ path modifies, with its files, or each finding awaiting the user, with its quest
 ````markdown
 ---
 
-## ⛔ Round gate: <gated areas, or awaiting your answer> — no judge; report to the owner follows
+## 🚨 Round gate: <gated areas, or awaiting your answer> — no judge; report to the owner follows
 
 - **<area>:** `<file>`, `<file>`
 - **<finding>:** <the question for the user>
