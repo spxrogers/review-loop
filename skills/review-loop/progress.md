@@ -39,7 +39,7 @@ files, never rebuilt from memory: the conversation may have been compacted by th
 | **adversarial** | | |
 | 🟠 ISSUE | Unescaped `title` in the export header ×3 (+ correctness) | ✅ Accept |
 | 🟡 NIT ← 🟠 | Log line can exceed 60 KB | ✅ Accept — rated down: field capped at parse |
-| **api-design** — CLEAN | | |
+| **api-design** 💚 CLEAN | | |
 | **test-rigor** | | |
 | 🟠 ISSUE | Timeout test passes with the timeout dropped | ❌ Reject — `wrapper.test.ts:40` pins it |
 | 🟡 NIT | Duplicated fixture helpers | ✅ Accept → filed: out of scope |
@@ -53,7 +53,7 @@ rejected row not included, and says how the round ends: `converged`, `not conver
 
 **Rows are grouped by lens**, in the order correctness, adversarial, api-design, test-rigor. A
 lens's group opens with a row holding only its name in bold. A lens with no findings is one row,
-`**<lens>** — CLEAN`. Within a group, rows run from most severe to least; at equal severity a
+`**<lens>** 💚 CLEAN`. Within a group, rows run from most severe to least; at equal severity a
 finding more than one lens raised comes first.
 
 **A row is one Round history entry**: one finding, or one class with all its instances. So:
