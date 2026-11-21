@@ -25,7 +25,12 @@ and can start subagents.
   grants two more rounds or the loop reports to the person who owns the decision.
 - **Later rounds review the fixes.** The first two rounds read the whole PR; after that a round
   reads only what the last round changed.
-- **It ends with a report** in a fixed format, posted as a comment on the PR.
+- **Every round shows a table**: the round's findings grouped by lens, most severe first, each
+  with its severity (🔴 BLOCKER, 🟠 ISSUE, 🟡 NIT), a one-line summary, and whether the main
+  session accepted it or, with a reason, rejected it. A judge's verdict is set apart on its own.
+- **It ends with a report** in a fixed format, posted as a comment on the PR. It recaps every
+  round's table without the nits, repeats the judge's verdict, and lists the nits fixed on the
+  way out.
 
 It is heavy: 12 subagent runs by default, up to 21. It is meant for substantive changes (new
 interfaces, contract changes, load-bearing refactors), not small fixes or doc-only PRs.
@@ -37,6 +42,7 @@ skills/review-loop/
   SKILL.md             the method
   lenses/              one file per lens, and brief.md for what every brief shares
   severity-rubric.md   what BLOCKER, ISSUE and NIT mean, and how to choose
+  progress.md          what the conversation shows: the round table and the judge's verdict
   report.md            the final report's format
 reviewlooprc.example   a starting point for a repo's own .reviewlooprc
 ```

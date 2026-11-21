@@ -64,6 +64,7 @@ for round in 1..budget:
   wait for all 4 to report                  # they report; they never edit
   synthesize findings (convergent vs single-reviewer; rank by severity)
   audit each finding yourself               # reviewers are wrong sometimes
+  show the round table                      # progress.md; Step 2, item 7
   if the round converges:                   # on the audited findings (Step 2, items 4–6)
     fix the NITs worth their risk, from every round,
     verify them yourself, commit + push, stop   # see Step 5
@@ -80,8 +81,9 @@ if no round converged:
   write the post-mortem                     # Step 6
   if the path touches a gated area, or a finding awaits the
      user's answer:
-    report to owner; stop                   # Step 6.2
+    show the round-gate block; report to owner; stop   # Step 6.2
   launch a background Opus judge on the post-mortem
+  show the judge's verdict on its own       # progress.md; Step 6.3
   if the judge passes: apply the path (Step 6.3), commit + push,
                        budget += 2, extended = true, run the next round
                        # in those rounds a gated fix outside the path ends the run
@@ -248,6 +250,9 @@ file outside the worktree (the session's scratchpad directory, or
 - **each lens's report, verbatim**, saved beside the context file as
   it arrives (`round-<n>-<lens>.md`), so the Round history can be
   checked against what the reviewers actually said;
+- **each round's table**, saved beside it as `round-<n>-table.md`
+  when it is shown (Step 2, item 7), so the final report's recap is
+  copied rather than rebuilt from memory;
 - a **Round history** section, appended after every round. The
   final report's scorecard is counted from it
   ([`report.md`](report.md)), so write each round's entries when
@@ -389,7 +394,8 @@ the first brief, and copy from them verbatim:
 | [`lenses/api-design.md`](lenses/api-design.md) | Lens 3: its cap and angles |
 | [`lenses/test-rigor.md`](lenses/test-rigor.md) | Lens 4: its cap, its angles and the mutation sweep |
 | [`severity-rubric.md`](severity-rubric.md) | what `BLOCKER`, `ISSUE` and `NIT` mean and how to choose one. Every brief's header lists it to read, and its last section is for you (Step 2, item 5) |
-| [`report.md`](report.md) | the final report's shape: the comment posted on the PR, its first line, and the scorecard (Step 5) |
+| [`progress.md`](progress.md) | what the user sees while the loop runs: the severity colours, the round table (Step 2, item 7) and the judge's verdict (Step 6) |
+| [`report.md`](report.md) | the final report's shape: the comment posted on the PR, its first line, the scorecard, and the recap of the rounds (Step 5) |
 
 **The read-only clause is pasted verbatim at the end of every
 brief, every round**, never summarized: `general-purpose` agents
@@ -572,6 +578,18 @@ converged — carries no weight.
      linking the closed one: the fix did not hold.
    - If the user asks for one to be fixed in this PR, it becomes an
      ordinary finding from then on.
+
+7. **Show the round table.** When the audit is done and before any
+   fix, show the user the round in the shape
+   [`progress.md`](progress.md) gives: a heading naming the round,
+   its kind and SHA; a tally; then one table, grouped by lens, a row
+   per finding or class, most severe first in each group, with your
+   audited severity in its colour, a one-line summary, and your
+   verdict — accept, or reject with the reason. Save it as
+   `round-<n>-table.md` beside the context file. Lines this step
+   asks you to tell the user (a filed or worsened BLOCKER or ISSUE)
+   go under the table, not in place of it. The table is the user's
+   view of the round; the Round history is still the record.
 
 ## Step 3: fix — the main session, and only the main session
 
@@ -769,7 +787,10 @@ fixed or still *held for the exit* — and every overrule of a BLOCKER or ISSUE 
 item 4), and every BLOCKER or ISSUE accepted without verification
 (Step 2, item 5), with what its fix changed. Findings filed, and
 fixes made in their own PR, go in its `### Sent to another PR`
-section ([`report.md`](report.md)). If the Round history records a
+section ([`report.md`](report.md)). The report also recaps every
+round's table without its NIT rows, repeats the judge's verdict when
+the judge ran, and, at Convergence, lists the NITs fixed on the way
+out ([`report.md`](report.md)). If the Round history records a
 fix's own PR, run its branch check (Step 3, *A fix in its own PR*,
 step 4) before writing the report. A *pre-existing*, *out of
 scope* or
@@ -888,7 +909,10 @@ an area is touched, it is touched.
 
 If the path touches any gated area: **stop and report to the owner**,
 with the post-mortem and a plain list of the area(s) the path
-modifies and the files in each. Do not launch the judge.
+modifies and the files in each. Do not launch the judge. Show the
+round-gate block ([`progress.md`](progress.md), *The judge's
+verdict*) before the report, so the stop is not lost under the
+post-mortem; the same holds for the stop below.
 
 Likewise, if any finding awaits the user's answer: no path can
 close it, only their answer can. Report to the owner with the
@@ -931,6 +955,15 @@ way Step 2 item 4 matches CLEAN: `JUDGE: PASS`, `JUDGE: GATED —
 <areas>`, or `JUDGE: FAIL — <reason>`. A PASS with conditions
 attached is read as FAIL; a body that doubts the safety check is
 read as GATED. Wait for it; do no fixing while it runs.
+
+**Show the verdict on its own as soon as it arrives**, in the block
+[`progress.md`](progress.md) gives — set apart by rules, a heading
+naming the verdict and what it does to the run, the judge's
+reasoning in its own words, a line per test, and what happens next —
+before acting on it. The verdict decides the rest of the run; in a
+long conversation it is the line the user most needs to find. Every
+final report of the run repeats it ([`report.md`](report.md), *The
+judge*).
 
 - **`JUDGE: PASS`** — grant two more rounds: apply the path
   (Step 3), commit and push, and run the next round. Record the

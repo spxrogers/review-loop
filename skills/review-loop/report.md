@@ -47,11 +47,48 @@ by_lens: correctness=3 adversarial=2 api-design=1 test-rigor=4
   this order, a count of `0` written as `0`. Its first line names the format's version; a change
   to the keys or to what one counts raises it.
 - **After it, the report Step 5 requires**, written for a reader with none of the run's context:
-  how the run ended, then every finding left open (held, deferred, NITs not fixed), the
-  section below on findings sent to another PR, every overrule of a BLOCKER or ISSUE with the
-  lens's words beside the evidence, every one accepted without verification, the issues filed,
-  and that the loop did not run the full checks on the head.
+  how the run ended, then the sections below on the judge, the rounds and the NITs fixed, then
+  every finding left open (held, deferred, NITs not fixed), the section below on findings sent
+  to another PR, every overrule of a BLOCKER or ISSUE with the lens's words beside the
+  evidence, every one accepted without verification, the issues filed, and that the loop did
+  not run the full checks on the head.
   When nothing is left open, say so in one line.
+- **Severities carry their colours** everywhere after the scorecard: 🔴 BLOCKER, 🟠 ISSUE,
+  🟡 NIT ([`progress.md`](progress.md)). The scorecard keeps plain text.
+
+## The judge
+
+When the run reached Step 6, a section headed `### The judge`, straight after the line on how
+the run ended: the verdict line as the judge wrote it, its reasoning in its own words (two to
+four lines), and what followed (the rounds it granted and whether they converged, or that the
+run stopped). When the safety check stopped the run before a judge ran, the section is headed
+`### The round gate` and names the gated areas, or the findings awaiting the user. A run that
+never reached Step 6 has neither section.
+
+## The rounds
+
+A section headed `### Rounds`: every round's table ([`progress.md`](progress.md)), in order,
+copied from the saved `round-<n>-table.md` files, **without its NIT rows**. A row is a NIT row
+when its severity column starts with 🟡: a finding rated down to a NIT is dropped, and an ISSUE
+rejected as false stays, since it is an overrule. A lens group left with no rows becomes the
+one row `**<lens>** — no BLOCKER or ISSUE`; a round left with none at all keeps its heading and
+tally, and the line `No BLOCKER or ISSUE.` in place of its table. Verdicts are brought up to
+date: a row held at a round gate and fixed later says so (`✅ Accept · held → fixed in <sha>`).
+
+## NITs fixed on the way out
+
+At Convergence only, a section headed `### NITs fixed on the way out`, after the rounds: one
+bullet per NIT fixed in the final commit (Step 3's return test), from any round. Each is the
+file and line, and what changed, in a few words:
+
+```markdown
+- `flush.ts:12` — stale comment above `flush()` now describes the batching
+- `README.md:40` — install step names the current flag
+```
+
+When none passed the return test, the section is the one line
+`### NITs fixed on the way out: none`. NITs left unfixed are listed with the open findings, not
+here.
 
 ## Findings sent to another PR
 
