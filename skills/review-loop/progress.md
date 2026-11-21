@@ -113,12 +113,28 @@ arrives, before anything else is done with it, set apart by a rule above and bel
 ---
 ````
 
-For the other verdicts the heading says what happens to the run, and the three lines say which
+For FAIL and GATED the heading says what happens to the run, and the three lines say which
 test failed:
 
 - `## ⚖️ Judge: FAIL ❌ — the run stops; report to the owner follows`
 - `## ⚖️ Judge: GATED ‼️🛑 — <areas>; the run stops; report to the owner follows`
-- `## ⚖️ Judge: no verdict 🙋❓ — the run stops; report to the owner follows`
+
+A PASS with conditions attached is a FAIL (Step 6.3), and is shown as one. **No verdict** is
+only a report that ends without a `JUDGE:` line: one that broke off, or ended on prose. It has
+no test lines, since the judge stated none the loop can read. Its block is the heading, the
+report's last two or three lines as the judge wrote them, and the next step:
+
+````markdown
+---
+
+## ⚖️ Judge: no verdict 🙋❓ — the run stops; report to the owner follows
+
+> <the last lines of the judge's report, verbatim>
+
+**Next:** report to the owner, with the judge's full report. The judge is not asked again.
+
+---
+````
 
 When the safety check stops the run before a judge is launched (Step 6.2), the same block is
 shown with the heading `## ⛔ Round gate: <gated areas, or awaiting your answer> — no judge;
