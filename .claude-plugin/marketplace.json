@@ -1,0 +1,17 @@
+{
+  "name": "review-loop",
+  "owner": {
+    "name": "spxrogers",
+    "url": "https://github.com/spxrogers"
+  },
+  "description": "The review-loop plugin: a multi-round, four-lens code review for Claude Code.",
+  "plugins": [
+    {
+      "name": "review-loop",
+      "source": "./",
+      "description": "Multi-round code review with four parallel read-only lenses, run until a round converges.",
+      "category": "development",
+      "tags": ["code-review", "pull-request"]
+    }
+  ]
+}

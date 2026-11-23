@@ -1,0 +1,13 @@
+{
+  "name": "review-loop",
+  "version": "1.0.0",
+  "description": "Multi-round code review: four read-only reviewers (correctness, adversarial, API design, test rigor) read a PR in parallel; the main session audits and fixes what holds up, and repeats until a round converges or the budget of rounds runs out.",
+  "author": {
+    "name": "spxrogers",
+    "url": "https://github.com/spxrogers"
+  },
+  "homepage": "https://github.com/spxrogers/review-loop",
+  "repository": "https://github.com/spxrogers/review-loop",
+  "license": "MIT",
+  "keywords": ["code-review", "pull-request", "review", "subagents", "skill"]
+}
