@@ -1,6 +1,6 @@
 {
   "name": "review-loop",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Multi-round code review: four read-only reviewers (correctness, adversarial, API design, test rigor) read a PR in parallel; the main session audits and fixes what holds up, and repeats until a round converges or the budget of rounds runs out.",
   "author": {
     "name": "spxrogers",
