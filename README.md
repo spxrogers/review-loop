@@ -39,6 +39,9 @@ interfaces, contract changes, load-bearing refactors), not small fixes or doc-on
 ## Layout
 
 ```
+.claude-plugin/
+  plugin.json          the Claude Code plugin manifest
+  marketplace.json     lists this repo as a one-plugin marketplace
 skills/review-loop/
   SKILL.md             the method
   lenses/              one file per lens, and brief.md for what every brief shares
@@ -50,8 +53,29 @@ reviewlooprc.example   a starting point for a repo's own .reviewlooprc
 
 ## Install
 
-Copy `skills/review-loop/` into the place your agent loads skills from. For Claude Code in one
-repository:
+### As a Claude Code plugin
+
+The repository is a Claude Code plugin and its own marketplace. In a Claude Code session:
+
+```
+/plugin install review-loop --marketplace spxrogers/review-loop
+```
+
+On a Claude Code older than 2.1.275, add the marketplace first, then install:
+
+```
+/plugin marketplace add spxrogers/review-loop
+/plugin install review-loop@review-loop
+```
+
+From a shell, the same two steps are `claude plugin marketplace add spxrogers/review-loop` and
+`claude plugin install review-loop@review-loop`. Ask for it by name, with the PR and what you want
+from the review: plugin skills are namespaced, so it is `/review-loop:review-loop`.
+
+### As a plain skill
+
+For another agent, or to vendor it into one repository, copy `skills/review-loop/` into the place
+your agent loads skills from. For Claude Code in one repository:
 
 ```bash
 git clone https://github.com/spxrogers/review-loop
@@ -59,8 +83,9 @@ mkdir -p .claude/skills
 cp -r review-loop/skills/review-loop .claude/skills/review-loop
 ```
 
-Then ask for it by name: `/review-loop`, with the PR and what you want from the review. The
-skill does not start on its own from a plain "review this".
+Then ask for it by name: `/review-loop`.
+
+Either way, the skill does not start on its own from a plain "review this".
 
 ## Your repo's conventions: `.reviewlooprc`
 
